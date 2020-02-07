@@ -1,0 +1,3 @@
+package facultybar;
+
+@license(LGPL);
