@@ -17,7 +17,7 @@ class SeatManager : public cSimpleModule
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
-    bool isFull(){ return (numberOfOccupiedSeats==(int)par("totalTableNumber"));}
+    bool tablesAreFull(){ return (numberOfOccupiedSeats==(int)par("totalTableNumber"));}
   public:
     SeatManager();
 };

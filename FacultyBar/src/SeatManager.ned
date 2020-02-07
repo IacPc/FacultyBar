@@ -1,5 +1,5 @@
 
-package facultybar;
+package FacultyBar.src;
 
 
 simple SeatManager

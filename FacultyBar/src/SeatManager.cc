@@ -28,11 +28,13 @@ void SeatManager::handleMessage(cMessage *msg)
 {
     OrderMessage* odm= static_cast<OrderMessage*>(msg);
     if(odm->isSelfMessage()){
-        cancelanddelete(odm);
+        cancelAndDelete(odm);
         numberOfOccupiedSeats--;
 
         if(customerQueue.size()>0){
-            odm = customerQueue.first();
+            odm = customerQueue.front();
+            double t;
+
             customerQueue.pop();
             if((bool)par("exponentialEatingDistribution"))
                 t= exponential((double)par("exponentialEatingMean"));
