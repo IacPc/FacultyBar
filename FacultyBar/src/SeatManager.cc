@@ -5,12 +5,12 @@ Define_Module(SeatManager);
 
 void SeatManager::initialize()
 {
-    // TODO - Generated method body
+
 }
 
 SeatManager::SeatManager(){
-    //checkParameterValidity();
-    //numberOfOccupiedSeats=0;
+    checkParameterValidity();
+    numberOfOccupiedSeats=0;
 }
 
 void SeatManager::checkParameterValidity(){
@@ -27,5 +27,34 @@ void SeatManager::checkParameterValidity(){
 void SeatManager::handleMessage(cMessage *msg)
 {
     OrderMessage* odm= static_cast<OrderMessage*>(msg);
-   // if(){}
+    if(odm->isSelfMessage()){
+        cancelanddelete(odm);
+        numberOfOccupiedSeats--;
+
+        if(customerQueue.size()>0){
+            odm = customerQueue.first();
+            customerQueue.pop();
+            if((bool)par("exponentialEatingDistribution"))
+                t= exponential((double)par("exponentialEatingMean"));
+            else
+                t=(double)par("constantEatingMean");
+           numberOfOccupiedSeats++;
+           scheduleAt(SimTime()+t, odm);
+        }
+    }else{ // Outer Message
+        if(tablesAreFull()){
+            customerQueue.push(odm);
+        }else{
+            double t;
+            if((bool)par("exponentialEatingDistribution"))
+                t= exponential((double)par("exponentialEatingMean"));
+            else
+                t=(double)par("constantEatingMean");
+            numberOfOccupiedSeats++;
+            scheduleAt(SimTime()+t, odm);
+
+        }
+
+
+    }
 }
