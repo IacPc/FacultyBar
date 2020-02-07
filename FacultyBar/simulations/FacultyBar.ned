@@ -1,9 +1,9 @@
 
-package FacultyBar.simulations;
+package facultybar.simulations;
 
-import FacultyBar.OrderProducer;
-import FacultyBar.Cashier;
-import FacultyBar.SeatManager;
+import facultybar.OrderProducer;
+import facultybar.Cashier;
+import facultybar.SeatManager;
 
 network FacultyBar
 {
@@ -11,7 +11,7 @@ network FacultyBar
         normalOrderProducer: OrderProducer;
         vipOrderProducer: OrderProducer {vipPriority = true;};
         cashier: Cashier;
-        seatManager: SeatManager;
+        seatManager: SeatManager{constantEatingDistribution=true;};
     connections:
         normalOrderProducer.out --> cashier.in[0];
         vipOrderProducer.out --> cashier.in[1];

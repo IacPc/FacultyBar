@@ -1,5 +1,5 @@
 
-package FacultyBar.src;
+package facultybar;
 
 
 simple OrderProducer

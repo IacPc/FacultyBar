@@ -3,6 +3,7 @@
 	<name>Faculty-Bar</name>
 	<comment></comment>
 	<projects>
+		<project>FacultyBar</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -18,5 +19,6 @@
 	</buildSpec>
 	<natures>
 		<nature>org.omnetpp.main.omnetppnature</nature>
+		<nature>org.eclipse.cdt.core.cnature</nature>
 	</natures>
 </projectDescription>

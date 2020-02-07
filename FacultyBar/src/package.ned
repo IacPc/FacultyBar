@@ -1,3 +1,3 @@
-package FacultyBar.src;
+package facultybar;
 
 @license(LGPL);

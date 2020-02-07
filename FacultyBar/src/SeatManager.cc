@@ -5,20 +5,20 @@ Define_Module(SeatManager);
 
 void SeatManager::initialize()
 {
+    checkParameterValidity();
 
 }
 
 SeatManager::SeatManager(){
-    checkParameterValidity();
     numberOfOccupiedSeats=0;
 }
 
 void SeatManager::checkParameterValidity(){
 
-    if((bool)par("constantEatingDistribution")==(bool) par("exponentialEatingDistribution"))
+    if(par("constantEatingDistribution").boolValue()==par("exponentialEatingDistribution").boolValue())
         throw cRuntimeError("Invalid parameters");
-    if((int)par("constantInfLimit")<0 || (int)par("constantSupLimit")<0 ||
-       (int)par("exponentialEatingMean")<0 ||(int)par("totalTableNumber")<0
+    if(par("constantEatingMean").intValue()<0 || par("exponentialEatingMean").intValue()<0 ||
+       par("totalTableNumber").intValue()<0
        )
         throw cRuntimeError("Invalid parameters");
 
@@ -36,10 +36,10 @@ void SeatManager::handleMessage(cMessage *msg)
             double t;
 
             customerQueue.pop();
-            if((bool)par("exponentialEatingDistribution"))
-                t= exponential((double)par("exponentialEatingMean"));
+            if(par("exponentialEatingDistribution").boolValue())
+                t= exponential(par("exponentialEatingMean").doubleValue());
             else
-                t=(double)par("constantEatingMean");
+                t= par("constantEatingMean").doubleValue();
            numberOfOccupiedSeats++;
            scheduleAt(SimTime()+t, odm);
         }
@@ -49,9 +49,9 @@ void SeatManager::handleMessage(cMessage *msg)
         }else{
             double t;
             if((bool)par("exponentialEatingDistribution"))
-                t= exponential((double)par("exponentialEatingMean"));
+                t= exponential(par("exponentialEatingMean").doubleValue());
             else
-                t=(double)par("constantEatingMean");
+                t=par("constantEatingMean").doubleValue();
             numberOfOccupiedSeats++;
             scheduleAt(SimTime()+t, odm);
 

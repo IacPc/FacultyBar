@@ -1,3 +1,3 @@
-package FacultyBar.simulations;
+package facultybar.simulations;
 
 @license(LGPL);
