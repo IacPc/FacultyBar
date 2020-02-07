@@ -5,6 +5,7 @@ package facultybar;
 simple OrderProducer
 {
     parameters:
+        int rngNumber = default(0);
         bool vipPriority = default(false);
         bool constantProductionDistribution = default(false);
         bool exponentialProductionDistribution = default(false);

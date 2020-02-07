@@ -45,7 +45,7 @@ double OrderProducer::generateProductionTime()
     if (par("constantProductionDistribution").boolValue()) {
         productionTime = par("constantProductionMean").doubleValue();
     } else if (par("exponentialProductionDistribution").boolValue()){
-        productionTime = exponential(par("exponentialProductionDistribution").doubleValue(), 0);
+        productionTime = exponential(par("exponentialProductionMean").doubleValue(), par("rngNumber").intValue());
     }
 
     EV << "New production time: " << productionTime << endl;
