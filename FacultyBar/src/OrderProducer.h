@@ -10,7 +10,7 @@ using namespace omnetpp;
 class OrderProducer : public cSimpleModule
 {
   private:
-    cMessage* timerMessage = NULL;
+    cMessage* timerMessage;
 
     void checkParametersValidity();
     double generateProductionTime();
@@ -18,7 +18,11 @@ class OrderProducer : public cSimpleModule
 
   protected:
     virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    virtual void handleMessage(cMessage* msg);
+
+  public:
+    OrderProducer();
+    virtual ~OrderProducer();
 };
 
 #endif

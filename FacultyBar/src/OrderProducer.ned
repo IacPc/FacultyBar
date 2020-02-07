@@ -8,8 +8,8 @@ simple OrderProducer
         bool vipPriority = default(false);
         bool constantProductionDistribution = default(false);
         bool exponentialProductionDistribution = default(false);
-        double constantProductionMean = default(0);
-        double exponentialProductionMean = default(0);
+        double constantProductionMean @unit(s) = default(0s);
+        double exponentialProductionMean @unit(s) = default(0s);
 	gates:
 	    output out;
 }
