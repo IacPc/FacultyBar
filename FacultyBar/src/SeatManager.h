@@ -17,7 +17,9 @@ class SeatManager : public cSimpleModule
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
-    bool tablesAreFull(){ return (numberOfOccupiedSeats==(int)par("totalTableNumber"));}
+    bool tablesAreFull(){ return (numberOfOccupiedSeats==par("totalTableNumber").intValue());}
+    double assignEatingTime();
+    OrderMessage* removeCustomerFromQueue();
   public:
     SeatManager();
 };

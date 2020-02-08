@@ -13,6 +13,27 @@ SeatManager::SeatManager(){
     numberOfOccupiedSeats=0;
 }
 
+
+double SeatManager::assignEatingTime(){
+    double t;
+    if(par("exponentialEatingDistribution").boolValue())
+        t= exponential(par("exponentialEatingMean").doubleValue()); //Exponential Eating time
+    else
+        t= par("constantEatingMean").doubleValue();
+    return t;
+
+}
+OrderMessage* SeatManager::removeCustomerFromQueue(){
+
+    OrderMessage* o= customerQueue.front();
+    customerQueue.pop();
+    /*
+     EMIT STATISTICS HERE
+     */
+    return o;
+}
+
+
 void SeatManager::checkParameterValidity(){
 
     if(par("constantEatingDistribution").boolValue()==par("exponentialEatingDistribution").boolValue())
@@ -27,36 +48,20 @@ void SeatManager::checkParameterValidity(){
 void SeatManager::handleMessage(cMessage *msg)
 {
     OrderMessage* odm= static_cast<OrderMessage*>(msg);
-    if(odm->isSelfMessage()){
-        cancelAndDelete(odm);
+    if(odm->isSelfMessage()){ // A customer finish and leaves his spot
         numberOfOccupiedSeats--;
-
-        if(customerQueue.size()>0){
-            odm = customerQueue.front();
-            double t;
-
-            customerQueue.pop();
-            if(par("exponentialEatingDistribution").boolValue())
-                t= exponential(par("exponentialEatingMean").doubleValue());
-            else
-                t= par("constantEatingMean").doubleValue();
+        if(!customerQueue.empty()){
+           odm =removeCustomerFromQueue();
            numberOfOccupiedSeats++;
-           scheduleAt(SimTime()+t, odm);
+           scheduleAt(SimTime()+assignEatingTime(), odm);
         }
-    }else{ // Outer Message
-        if(tablesAreFull()){
+    }else{ // A customer requests a spot
+        if(tablesAreFull()){    //All servers busy and The customer goes in queue
             customerQueue.push(odm);
-        }else{
-            double t;
-            if((bool)par("exponentialEatingDistribution"))
-                t= exponential(par("exponentialEatingMean").doubleValue());
-            else
-                t=par("constantEatingMean").doubleValue();
+        }else{                  //the customer eats
             numberOfOccupiedSeats++;
-            scheduleAt(SimTime()+t, odm);
-
+            scheduleAt(SimTime()+assignEatingTime(), odm);
         }
-
 
     }
 }
