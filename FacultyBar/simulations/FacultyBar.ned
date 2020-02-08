@@ -8,10 +8,10 @@ import facultybar.SeatManager;
 network FacultyBar
 {
     submodules:
-        normalOrderProducer: OrderProducer;
-        vipOrderProducer: OrderProducer {vipPriority = true;};
+        normalOrderProducer: OrderProducer {rngNumber = 0;};
+        vipOrderProducer: OrderProducer {rngNumber = 1; vipPriority = true;};
         cashier: Cashier;
-        seatManager: SeatManager{constantEatingDistribution=true;};
+        seatManager: SeatManager;
     connections:
         normalOrderProducer.out --> cashier.in[0];
         vipOrderProducer.out --> cashier.in[1];

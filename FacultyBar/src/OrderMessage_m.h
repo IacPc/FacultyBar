@@ -24,6 +24,7 @@
  * message OrderMessage
  * {
  *     bool vipPriority;
+<<<<<<< HEAD
  *     double cashierQueueArrivalTime;
  *     double cashierQueueExitTime;
  *     double cashierNodeDepartureTime;
@@ -75,6 +76,59 @@ class OrderMessage : public ::omnetpp::cMessage
     virtual void setSeatManagerQueueExitTime(double seatManagerQueueExitTime);
     virtual double getSeatManagerNodeDepartureTime() const;
     virtual void setSeatManagerNodeDepartureTime(double seatManagerNodeDepartureTime);
+=======
+ *     simtime_t cashierQueueArrivalTime;
+ *     simtime_t cashierQueueExitTime;
+ *     simtime_t cashierNodeDepartureTime;
+ *     simtime_t seatManagerQueueArrivalTime;
+ *     simtime_t seatManagerQueueExitTime;
+ *     simtime_t seatManagerNodeDepartureTime;
+ * }
+ * </pre>
+ */
+class OrderMessage : public ::omnetpp::cMessage
+{
+  protected:
+    bool vipPriority;
+    ::omnetpp::simtime_t cashierQueueArrivalTime;
+    ::omnetpp::simtime_t cashierQueueExitTime;
+    ::omnetpp::simtime_t cashierNodeDepartureTime;
+    ::omnetpp::simtime_t seatManagerQueueArrivalTime;
+    ::omnetpp::simtime_t seatManagerQueueExitTime;
+    ::omnetpp::simtime_t seatManagerNodeDepartureTime;
+
+  private:
+    void copy(const OrderMessage& other);
+
+  protected:
+    // protected and unimplemented operator==(), to prevent accidental usage
+    bool operator==(const OrderMessage&);
+
+  public:
+    OrderMessage(const char *name=nullptr, short kind=0);
+    OrderMessage(const OrderMessage& other);
+    virtual ~OrderMessage();
+    OrderMessage& operator=(const OrderMessage& other);
+    virtual OrderMessage *dup() const override {return new OrderMessage(*this);}
+    virtual void parsimPack(omnetpp::cCommBuffer *b) const override;
+    virtual void parsimUnpack(omnetpp::cCommBuffer *b) override;
+
+    // field getter/setter methods
+    virtual bool getVipPriority() const;
+    virtual void setVipPriority(bool vipPriority);
+    virtual ::omnetpp::simtime_t getCashierQueueArrivalTime() const;
+    virtual void setCashierQueueArrivalTime(::omnetpp::simtime_t cashierQueueArrivalTime);
+    virtual ::omnetpp::simtime_t getCashierQueueExitTime() const;
+    virtual void setCashierQueueExitTime(::omnetpp::simtime_t cashierQueueExitTime);
+    virtual ::omnetpp::simtime_t getCashierNodeDepartureTime() const;
+    virtual void setCashierNodeDepartureTime(::omnetpp::simtime_t cashierNodeDepartureTime);
+    virtual ::omnetpp::simtime_t getSeatManagerQueueArrivalTime() const;
+    virtual void setSeatManagerQueueArrivalTime(::omnetpp::simtime_t seatManagerQueueArrivalTime);
+    virtual ::omnetpp::simtime_t getSeatManagerQueueExitTime() const;
+    virtual void setSeatManagerQueueExitTime(::omnetpp::simtime_t seatManagerQueueExitTime);
+    virtual ::omnetpp::simtime_t getSeatManagerNodeDepartureTime() const;
+    virtual void setSeatManagerNodeDepartureTime(::omnetpp::simtime_t seatManagerNodeDepartureTime);
+>>>>>>> branch 'master' of https://github.com/IacPc/Faculty-Bar.git
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const OrderMessage& obj) {obj.parsimPack(b);}

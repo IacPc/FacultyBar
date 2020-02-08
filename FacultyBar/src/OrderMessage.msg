@@ -1,10 +1,10 @@
 
 message OrderMessage {
-  bool 	 vipPriority;
-  double cashierQueueArrivalTime;
-  double cashierQueueExitTime;
-  double cashierNodeDepartureTime;
-  double seatManagerQueueArrivalTime;
-  double seatManagerQueueExitTime;
-  double seatManagerNodeDepartureTime;
+  bool vipPriority;
+  simtime_t cashierQueueArrivalTime;
+  simtime_t cashierQueueExitTime;
+  simtime_t cashierNodeDepartureTime;
+  simtime_t seatManagerQueueArrivalTime;
+  simtime_t seatManagerQueueExitTime;
+  simtime_t seatManagerNodeDepartureTime;
 }
