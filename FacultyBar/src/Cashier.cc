@@ -12,7 +12,7 @@ Cashier::Cashier()
 Cashier::~Cashier()
 {
     cancelAndDelete(timerMessage);
-    cancelAndDelete(orderUnderService);
+    delete orderUnderService;
 
     OrderMessage* customerMessage = NULL;
 
