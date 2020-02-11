@@ -12,7 +12,9 @@ Cashier::Cashier()
 Cashier::~Cashier()
 {
     cancelAndDelete(timerMessage);
-    delete orderUnderService;
+
+    if (orderUnderService != NULL)
+        delete orderUnderService;
 
     OrderMessage* customerMessage = NULL;
 
@@ -53,6 +55,47 @@ void Cashier::checkParametersValidity()
     }
 }
 
+void Cashier::initializeStatisticSignals()
+{
+    waitingTimeNormalCustomerCashierQueueSignal = registerSignal("waitingTimeNormalCustomerCashierQueue");
+    waitingTimeVipCustomerCashierQueueSignal = registerSignal("waitingTimeVipCustomerCashierQueue");
+    responseTimeNormalCustomerCashierNodeSignal = registerSignal("responseTimeNormalCustomerCashierNode");
+    responseTimeVipCustomerCashierNodeSignal = registerSignal("responseTimeVipCustomerCashierNode");
+    numberOfNormalCustomersCashierQueueSignal = registerSignal("numberOfNormalCustomersCashierQueue");
+    numberOfVipCustomersCashierQueueSignal = registerSignal("numberOfVipCustomersCashierQueue");
+}
+
+void Cashier::emitWaitingTime(OrderMessage* customerOrder)
+{
+    simtime_t waitingTime = customerOrder->getCashierQueueExitTime() - customerOrder->getCashierQueueArrivalTime();
+
+    if (customerOrder->getVipPriority()) {
+        emit(waitingTimeVipCustomerCashierQueueSignal, waitingTime);
+    } else {
+        emit(waitingTimeNormalCustomerCashierQueueSignal, waitingTime);
+    }
+}
+
+void Cashier::emitResponseTime(OrderMessage* customerOrder)
+{
+    simtime_t responseTime = customerOrder->getCashierNodeDepartureTime() - customerOrder->getCashierQueueArrivalTime();
+
+    if (customerOrder->getVipPriority()) {
+        emit(responseTimeVipCustomerCashierNodeSignal, responseTime);
+    } else {
+        emit(responseTimeNormalCustomerCashierNodeSignal, responseTime);
+    }
+}
+
+void Cashier::emitCustomerQueueSize(int numberOfCustomers, bool vipQueue)
+{
+    if (vipQueue) {
+        emit(numberOfVipCustomersCashierQueueSignal, numberOfCustomers);
+    } else {
+        emit(numberOfNormalCustomersCashierQueueSignal, numberOfCustomers);
+    }
+}
+
 double Cashier::generateServiceTime()
 {
     double serviceTime = 0;
@@ -74,16 +117,20 @@ void Cashier::handleOrderArrival(cMessage* msg)
 
     if(!busy) {
         newOrder->setCashierQueueExitTime(simTime());
+        emitWaitingTime(newOrder);
+
         orderUnderService = newOrder;
         busy = true;
         scheduleAt(simTime() + generateServiceTime(), timerMessage);
     } else {
         if (newOrder->getVipPriority()) {
             vipCustomerQueue.push(newOrder);
+            emitCustomerQueueSize(vipCustomerQueue.size(), true);
             EV << "New VIP order queued." << endl;
         }
         else {
             normalCustomerQueue.push(newOrder);
+            emitCustomerQueueSize(normalCustomerQueue.size(), false);
             EV << "New normal order queued." << endl;
         }
     }
@@ -92,11 +139,16 @@ void Cashier::handleOrderArrival(cMessage* msg)
 void Cashier::completeOrder()
 {
     orderUnderService->setCashierNodeDepartureTime(simTime());
+    emitResponseTime(orderUnderService);
+
     send(orderUnderService, "out");
     EV << "New order completed." << endl;
 
     if (vipCustomerQueue.empty() && normalCustomerQueue.empty()) {
-        orderUnderService = NULL; // For pure "safety" reason
+        // For pure "safety" reason: avoid to delete a message that leaved the node,
+        // though Omnet prevents doing it without the message ownership.
+        orderUnderService = NULL;
+
         busy = false;
         return;
     }
@@ -105,20 +157,30 @@ void Cashier::completeOrder()
     if (!vipCustomerQueue.empty()) {
         orderUnderService = vipCustomerQueue.front();
         vipCustomerQueue.pop();
+        emitCustomerQueueSize(vipCustomerQueue.size(), true);
     } else if (!normalCustomerQueue.empty()) {
         orderUnderService = normalCustomerQueue.front();
         normalCustomerQueue.pop();
+        emitCustomerQueueSize(normalCustomerQueue.size(), true);
     }
 
     orderUnderService->setCashierQueueExitTime(simTime());
+    emitWaitingTime(orderUnderService);
+
     scheduleAt(simTime() + generateServiceTime(), timerMessage);
 }
 
 void Cashier::initialize()
 {
     checkParametersValidity();
+    initializeStatisticSignals();
+
     timerMessage = new cMessage("timerMessage");
     busy = false;
+
+    // At the beginning, both queues are empty
+    emitCustomerQueueSize(normalCustomerQueue.size(), false);
+    emitCustomerQueueSize(vipCustomerQueue.size(), true);
 }
 
 void Cashier::handleMessage(cMessage* msg)

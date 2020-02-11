@@ -1,9 +1,7 @@
 
 package facultybar.simulations;
 
-//import facultybar.Cashier;
 import facultybar.*;
-//import facultybar.OrderProducer;
 
 network FacultyBar
 {

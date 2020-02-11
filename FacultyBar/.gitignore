@@ -2,4 +2,8 @@
 /out/gcc-release/src
 /src/FacultyBar_dbg
 /src/FacultyBar
+/src/.qtenvrc
 /.settings/
+/simulations/results
+/simulations/.qtenvrc
+.qtenvrc
