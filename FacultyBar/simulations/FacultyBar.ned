@@ -1,9 +1,9 @@
 
 package facultybar.simulations;
 
-import facultybar.OrderProducer;
-import facultybar.Cashier;
-import facultybar.SeatManager;
+//import facultybar.Cashier;
+import facultybar.*;
+//import facultybar.OrderProducer;
 
 network FacultyBar
 {

@@ -1,6 +1,7 @@
 
 message OrderMessage {
   bool vipPriority;
+  int positionInArray;
   simtime_t cashierQueueArrivalTime;
   simtime_t cashierQueueExitTime;
   simtime_t cashierNodeDepartureTime;
