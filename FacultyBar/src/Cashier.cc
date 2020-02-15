@@ -187,7 +187,7 @@ void Cashier::handleMessage(cMessage* msg)
 {
     if (msg->isSelfMessage()) {
         completeOrder();
-    } else if (strcmp(msg->getName(), "orderMessage") == 0) {
+    } else if (msg->isName("orderMessage")) {
         handleOrderArrival(msg);
     }
 }

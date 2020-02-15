@@ -11,12 +11,12 @@ simple Cashier
         double exponentialServiceMean @unit(s) = default(0s);
         
         // Statistics
-        @signal[waitingTimeNormalCustomerCashierQueue](type = "simtime_t");
-        @signal[waitingTimeVipCustomerCashierQueue](type = "simtime_t");
-        @signal[responseTimeNormalCustomerCashierNode](type = "simtime_t");
-        @signal[responseTimeVipCustomerCashierNode](type = "simtime_t");
-        @signal[numberOfNormalCustomersCashierQueue](type = "int");
-        @signal[numberOfVipCustomersCashierQueue](type = "int");
+        @signal[waitingTimeNormalCustomerCashierQueue](type = simtime_t);
+        @signal[waitingTimeVipCustomerCashierQueue](type = simtime_t);
+        @signal[responseTimeNormalCustomerCashierNode](type = simtime_t);
+        @signal[responseTimeVipCustomerCashierNode](type = simtime_t);
+        @signal[numberOfNormalCustomersCashierQueue](type = int);
+        @signal[numberOfVipCustomersCashierQueue](type = int);
         
         @statistic[waitingTimeNormalCustomerCashierQueueStatistic](source = waitingTimeNormalCustomerCashierQueue; record = vector);
       	@statistic[waitingTimeVipCustomerCashierQueueStatistic](source = waitingTimeVipCustomerCashierQueue; record = vector);
