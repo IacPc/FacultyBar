@@ -13,20 +13,20 @@ simple SeatManager
 		int numberOfSeatsPerTable = default(0);
 		
 		//signals
-		@signal [waitingTimeNormalCustomerTableQueue](type=double);
+		@signal [waitingTimeNormalCustomerTableQueue](type=simtime_t);
 		@statistic[waitingTimeNormalCustomerTableQueueStatistic](source="waitingTimeNormalCustomerTableQueue";record= vector);
 		
-		@signal[waitingTimeVipCustomerTableQueue](type=double);
+		@signal[waitingTimeVipCustomerTableQueue](type=simtime_t);
 		@statistic[waitingTimeVipCustomerTableQueueStatistic](source="waitingTimeVipCustomerTableQueue";record= vector);
 		
-		@signal[responseTimeNormalCustomerTableNode](type=double);
+		@signal[responseTimeNormalCustomerTableNode](type=simtime_t);
 		@statistic[responseTimeNormalCustomerTableNodeStatistic](source="responseTimeNormalCustomerTableNode";record= vector);
 		
-		@signal[responseTimeVipCustomerTableNode](type=double);
+		@signal[responseTimeVipCustomerTableNode](type=simtime_t);
 		@statistic[responseTimeVipCustomerTableNodeStatistic](source="responseTimeVipCustomerTableNode";record= vector);
 		
-		@signal[numberOfCustomersTableQueue](type=double);
-		@statistic[numberOfNormalCustomersTableQueueStatistic](source="numberOfCustomersTableQueue";record= vector);
+		@signal[numberOfCustomersTableQueue](type=int);
+		@statistic[numberOfCustomersTableQueueStatistic](source="numberOfCustomersTableQueue";record= vector);
 		
 						
 	gates:

@@ -10,7 +10,10 @@ void SeatManager::initialize()
     waitingTimeVipCustomerTableQueueSignal=registerSignal("waitingTimeVipCustomerTableQueue");
     responseTimeNormalCustomerTableNodeSignal=registerSignal("responseTimeNormalCustomerTableNode");
     responseTimeVipCustomerTableNodeSignal=registerSignal("responseTimeVipCustomerTableNode");
-    numberOfCustomersTableQueueSignal=registerSignal("numberOfNormalCustomersTableQueue");
+    numberOfCustomersTableQueueSignal=registerSignal("numberOfCustomersTableQueue");
+
+    // // At the beginning, the queue is empty
+    emit(numberOfCustomersTableQueueSignal,customerQueue.size());
 
 }
 
@@ -90,9 +93,9 @@ void SeatManager::emitWaitingTimeSignal(OrderMessage* msg){
 
 void SeatManager::emitResponseTimeSignal(OrderMessage* msg){
     simtime_t dep =msg->getSeatManagerNodeDepartureTime();
-    simtime_t arrival = msg->getCashierQueueArrivalTime();
+    simtime_t arrival = msg->getSeatManagerQueueArrivalTime();
     if(msg->getVipPriority())
-        emit(responseTimeNormalCustomerTableNodeSignal,dep-arrival);
+        emit(responseTimeVipCustomerTableNodeSignal,dep-arrival);
     else
         emit(responseTimeNormalCustomerTableNodeSignal,dep-arrival);
 
@@ -107,7 +110,6 @@ void SeatManager::handleSelfMessage(OrderMessage* msg){
 
     if(!customerQueue.empty()){
         msg =removeCustomerFromQueue();
-        msg->setSeatManagerQueueExitTime(simTime());
         numberOfOccupiedSeats++;
         scheduleAt(simTime()+assignEatingTime(), msg);
     }
@@ -116,13 +118,16 @@ void SeatManager::handleSelfMessage(OrderMessage* msg){
 
 void SeatManager::handleOuterMessage(OrderMessage* msg){
 
-    if(tablesAreFull()){    //All servers busy and The customer goes in queue
+    msg->setSeatManagerQueueArrivalTime(simTime());
+
+    if(tablesAreFull()){    //All servers busy and the customer goes in queue
         customerQueue.push(msg);
-        msg->setSeatManagerQueueArrivalTime(simTime());
         emit(numberOfCustomersTableQueueSignal,customerQueue.size());
 
-    }else{//the customer eats
+    }else{ //the customer eats
         numberOfOccupiedSeats++;
+        msg->setSeatManagerQueueExitTime(simTime());
+        emitWaitingTimeSignal(msg);
         scheduleAt(simTime()+assignEatingTime(), msg);
     }
 }
@@ -132,7 +137,7 @@ void SeatManager::handleMessage(cMessage *msg)
 {
     OrderMessage* odm= check_and_cast<OrderMessage*>(msg);
 
-    if(odm->isSelfMessage()) // A customer finish and leaves his spot
+    if(odm->isSelfMessage()) // A customer finishes and leaves his spot
         handleSelfMessage(odm);
     else// A customer requests a spot
         handleOuterMessage(odm);
