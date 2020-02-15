@@ -77,7 +77,11 @@ void SeatManager::checkParameterValidity(){
         EV_ERROR << "Please check the correctness of your configuration file." << endl;
         throw cRuntimeError("Invalid parameters");
     }
-
+    if(par("numberOfTables").intValue()<0 || par("numberOfSeatsPerTable").intValue()<0){
+        EV_ERROR << "A negative number of tables/seats per table is not allowed. ";
+        EV_ERROR << "Please check the correctness of your configuration file." << endl;
+        throw cRuntimeError("Invalid parameters");
+    }
 
 }
 
