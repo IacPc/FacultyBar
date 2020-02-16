@@ -5,13 +5,15 @@
 #include <omnetpp.h>
 #include "OrderMessage_m.h"
 #include <queue>
+#include <unordered_set>
+
 using namespace omnetpp;
 
 
 class SeatManager : public cSimpleModule
 {
     std::queue<OrderMessage*> customerQueue;
-    unsigned int numberOfOccupiedSeats;
+    std::unordered_set<OrderMessage*> customerSeated;
     simsignal_t waitingTimeNormalCustomerTableQueueSignal;
     simsignal_t waitingTimeVipCustomerTableQueueSignal;
     simsignal_t responseTimeNormalCustomerTableNodeSignal;
@@ -31,7 +33,6 @@ class SeatManager : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 
   public:
-    SeatManager();
     ~SeatManager();
 };
 

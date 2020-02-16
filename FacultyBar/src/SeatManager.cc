@@ -6,19 +6,19 @@ Define_Module(SeatManager);
 void SeatManager::initialize()
 {
     checkParameterValidity();
+
+    // Reserve space for unordered_set to avoid rehashes when the actual size grows
+    int numberOfSeats = par("numberOfTables").intValue()*par("numberOfSeatsPerTable").intValue();
+    customerSeated.reserve(numberOfSeats);
+
     waitingTimeNormalCustomerTableQueueSignal=registerSignal("waitingTimeNormalCustomerTableQueue");
     waitingTimeVipCustomerTableQueueSignal=registerSignal("waitingTimeVipCustomerTableQueue");
     responseTimeNormalCustomerTableNodeSignal=registerSignal("responseTimeNormalCustomerTableNode");
     responseTimeVipCustomerTableNodeSignal=registerSignal("responseTimeVipCustomerTableNode");
     numberOfCustomersTableQueueSignal=registerSignal("numberOfCustomersTableQueue");
 
-    // // At the beginning, the queue is empty
+    // At the beginning, the queue is empty
     emit(numberOfCustomersTableQueueSignal,customerQueue.size());
-
-}
-
-SeatManager::SeatManager(){
-    numberOfOccupiedSeats=0;
 }
 
 
@@ -26,17 +26,22 @@ SeatManager::~SeatManager(){
 
     OrderMessage* om = NULL;
 
+    while (!customerSeated.empty()) {
+        om = *(customerSeated.begin());
+        customerSeated.erase(customerSeated.begin());
+        cancelAndDelete(om);
+    }
+
     while (!customerQueue.empty()) {
         om = customerQueue.front();
         customerQueue.pop();
         delete om;
    }
 
-
 }
 
 bool SeatManager::tablesAreFull(){
-    return (numberOfOccupiedSeats==par("numberOfTables").intValue()*par("numberOfSeatsPerTable").intValue());
+    return (customerSeated.size()==par("numberOfTables").intValue()*par("numberOfSeatsPerTable").intValue());
 }
 
 double SeatManager::assignEatingTime(){
@@ -107,14 +112,16 @@ void SeatManager::emitResponseTimeSignal(OrderMessage* msg){
 
 void SeatManager::handleSelfMessage(OrderMessage* msg){
 
-    numberOfOccupiedSeats--;
+    customerSeated.erase(msg);
+
     msg->setSeatManagerNodeDepartureTime(simTime());
     emitResponseTimeSignal(msg);
     delete msg;
 
     if(!customerQueue.empty()){
         msg =removeCustomerFromQueue();
-        numberOfOccupiedSeats++;
+        customerSeated.insert(msg);
+
         scheduleAt(simTime()+assignEatingTime(), msg);
     }
 }
@@ -129,7 +136,8 @@ void SeatManager::handleOuterMessage(OrderMessage* msg){
         emit(numberOfCustomersTableQueueSignal,customerQueue.size());
 
     }else{ //the customer eats
-        numberOfOccupiedSeats++;
+        customerSeated.insert(msg);
+
         msg->setSeatManagerQueueExitTime(simTime());
         emitWaitingTimeSignal(msg);
         scheduleAt(simTime()+assignEatingTime(), msg);
