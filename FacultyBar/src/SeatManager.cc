@@ -17,12 +17,12 @@ void SeatManager::initialize()
     checkParametersValidity();
     initializeStatisticSignals();
 
-    // Reserve space for unordered_set to avoid rehashes when the actual size grows
+    // Reserve space for unordered_set to avoid rehashing when the actual size grows.
     int numberOfSeats = par("numberOfTables").intValue()*par("numberOfSeatsPerTable").intValue();
     customerSeated.reserve(numberOfSeats);
 
     // At the beginning, the queue is empty
-    emit(numberOfCustomersTableQueueSignal,customerQueue.size());
+    emit(numberOfCustomersTableQueueSignal, customerQueue.size());
 }
 
 SeatManager::~SeatManager()
@@ -44,7 +44,7 @@ SeatManager::~SeatManager()
 
 bool SeatManager::tablesAreFull()
 {
-    return (customerSeated.size() == par("numberOfTables").intValue()*par("numberOfSeatsPerTable").intValue());
+    return (customerSeated.size() == (unsigned long)(par("numberOfTables").intValue()*par("numberOfSeatsPerTable").intValue()));
 }
 
 double SeatManager::assignEatingTime()
@@ -56,6 +56,7 @@ double SeatManager::assignEatingTime()
     else if (par("constantEatingDistribution").boolValue())
         eatingTime = par("constantEatingMean").doubleValue();
 
+    EV << "New eating time: " << eatingTime << endl;
     return eatingTime;
 }
 
@@ -63,6 +64,7 @@ OrderMessage* SeatManager::removeCustomerFromQueue()
 {
     OrderMessage* nextCustomer = customerQueue.front();
     customerQueue.pop();
+    emit(numberOfCustomersTableQueueSignal, customerQueue.size());
 
     nextCustomer->setSeatManagerQueueExitTime(simTime());
     emitWaitingTimeSignal(nextCustomer);
@@ -128,6 +130,7 @@ void SeatManager::handleLeavingCustomer(cMessage* msg)
 
     customerSeated.erase(leavingCustomer);
     delete leavingCustomer;
+    EV << "A customer leaved the bar." << endl;
 
     if (!customerQueue.empty()) {
         OrderMessage* nextCustomer = removeCustomerFromQueue();
@@ -144,6 +147,7 @@ void SeatManager::handleArrivingCustomer(cMessage* msg)
     if (tablesAreFull()) {    // All servers are busy and the customer goes in queue
         customerQueue.push(arrivingCustomer);
         emit(numberOfCustomersTableQueueSignal, customerQueue.size());
+        EV << "New customer queued." << endl;
 
     } else {  // The customer eats
         customerSeated.insert(arrivingCustomer);

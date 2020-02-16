@@ -25,7 +25,7 @@ simple SeatManager
 		@signal[responseTimeVipCustomerTableNode](type = simtime_t);
 		@statistic[responseTimeVipCustomerTableNodeStatistic](source = "responseTimeVipCustomerTableNode"; record = vector);
 		
-		@signal[numberOfCustomersTableQueue](type = int);
+		@signal[numberOfCustomersTableQueue](type = unsigned long);
 		@statistic[numberOfCustomersTableQueueStatistic](source = "numberOfCustomersTableQueue"; record = vector);
 						
 	gates:

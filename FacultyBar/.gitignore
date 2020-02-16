@@ -6,4 +6,6 @@
 /.settings/
 /simulations/results
 /simulations/.qtenvrc
+/simulations/.cmdenv-log
 .qtenvrc
+

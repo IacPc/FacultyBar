@@ -14,6 +14,8 @@ class SeatManager : public cSimpleModule
 {
     std::queue<OrderMessage*> customerQueue;
     std::unordered_set<OrderMessage*> customerSeated;
+
+    // Signals
     simsignal_t waitingTimeNormalCustomerTableQueueSignal;
     simsignal_t waitingTimeVipCustomerTableQueueSignal;
     simsignal_t responseTimeNormalCustomerTableNodeSignal;

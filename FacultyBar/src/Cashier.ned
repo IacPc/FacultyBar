@@ -15,8 +15,8 @@ simple Cashier
         @signal[waitingTimeVipCustomerCashierQueue](type = simtime_t);
         @signal[responseTimeNormalCustomerCashierNode](type = simtime_t);
         @signal[responseTimeVipCustomerCashierNode](type = simtime_t);
-        @signal[numberOfNormalCustomersCashierQueue](type = int);
-        @signal[numberOfVipCustomersCashierQueue](type = int);
+        @signal[numberOfNormalCustomersCashierQueue](type = long);
+        @signal[numberOfVipCustomersCashierQueue](type = long);
         
         @statistic[waitingTimeNormalCustomerCashierQueueStatistic](source = waitingTimeNormalCustomerCashierQueue; record = vector);
       	@statistic[waitingTimeVipCustomerCashierQueueStatistic](source = waitingTimeVipCustomerCashierQueue; record = vector);

@@ -102,7 +102,7 @@ double Cashier::generateServiceTime()
 
     if (par("constantServiceDistribution").boolValue()) {
         serviceTime = par("constantServiceMean").doubleValue();
-    } else if (par("exponentialServiceDistribution").boolValue()){
+    } else if (par("exponentialServiceDistribution").boolValue()) {
         serviceTime = exponential(par("exponentialServiceMean").doubleValue(), 2);
     }
 
@@ -161,7 +161,7 @@ void Cashier::completeOrder()
     } else if (!normalCustomerQueue.empty()) {
         orderUnderService = normalCustomerQueue.front();
         normalCustomerQueue.pop();
-        emitCustomerQueueSize(normalCustomerQueue.size(), true);
+        emitCustomerQueueSize(normalCustomerQueue.size(), false);
     }
 
     orderUnderService->setCashierQueueExitTime(simTime());
