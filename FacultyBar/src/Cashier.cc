@@ -106,7 +106,7 @@ double Cashier::generateServiceTime()
         serviceTime = exponential(par("exponentialServiceMean").doubleValue(), 2);
     }
 
-    EV << "New service time: " << serviceTime << endl;
+    EV << "A new order went under service. Service time: " << serviceTime << endl;
     return serviceTime;
 }
 
@@ -126,12 +126,12 @@ void Cashier::handleOrderArrival(cMessage* msg)
         if (newOrder->getVipPriority()) {
             vipCustomerQueue.push(newOrder);
             emitCustomerQueueSize(vipCustomerQueue.size(), true);
-            EV << "New VIP order queued." << endl;
+            EV << "A new VIP customer joined the queue." << endl;
         }
         else {
             normalCustomerQueue.push(newOrder);
             emitCustomerQueueSize(normalCustomerQueue.size(), false);
-            EV << "New normal order queued." << endl;
+            EV << "A new normal customer joined the queue." << endl;
         }
     }
 }
@@ -142,7 +142,7 @@ void Cashier::completeOrder()
     emitResponseTime(orderUnderService);
 
     send(orderUnderService, "out");
-    EV << "New order completed." << endl;
+    EV << "Order completed." << endl;
 
     if (vipCustomerQueue.empty() && normalCustomerQueue.empty()) {
         // For pure "safety" reason: avoid to delete a message that leaved the node,

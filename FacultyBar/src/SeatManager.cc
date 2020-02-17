@@ -56,7 +56,7 @@ double SeatManager::assignEatingTime()
     else if (par("constantEatingDistribution").boolValue())
         eatingTime = par("constantEatingMean").doubleValue();
 
-    EV << "New eating time: " << eatingTime << endl;
+    EV << "A new customer took a seat. Eating time: " << eatingTime << endl;
     return eatingTime;
 }
 
@@ -130,7 +130,7 @@ void SeatManager::handleLeavingCustomer(cMessage* msg)
 
     customerSeated.erase(leavingCustomer);
     delete leavingCustomer;
-    EV << "A customer leaved the bar." << endl;
+    EV << "A customer left the bar." << endl;
 
     if (!customerQueue.empty()) {
         OrderMessage* nextCustomer = removeCustomerFromQueue();
@@ -147,7 +147,7 @@ void SeatManager::handleArrivingCustomer(cMessage* msg)
     if (tablesAreFull()) {    // All servers are busy and the customer goes in queue
         customerQueue.push(arrivingCustomer);
         emit(numberOfCustomersTableQueueSignal, customerQueue.size());
-        EV << "New customer queued." << endl;
+        EV << "A new customer joined the queue." << endl;
 
     } else {  // The customer eats
         customerSeated.insert(arrivingCustomer);
