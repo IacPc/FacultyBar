@@ -35,6 +35,8 @@ void Cashier::checkParametersValidity()
 {
     bool constantDistributionEnabled = par("constantServiceDistribution").boolValue();
     bool exponentialDistributionEnabled = par("exponentialServiceDistribution").boolValue();
+    bool infiniteNormalCustomerQueueEnabled = par("infiniteNormalCustomerQueue").boolValue();
+    bool infiniteVipCustomerQueueEnabled = par("infiniteVipCustomerQueue").boolValue();
 
     if (constantDistributionEnabled == exponentialDistributionEnabled ) {
         EV_ERROR << "No distribution or multiple ones selected for the service time. ";
@@ -50,6 +52,18 @@ void Cashier::checkParametersValidity()
 
     if (exponentialDistributionEnabled && (par("exponentialServiceMean").doubleValue() < 0)) {
         EV_ERROR << "A negative mean value for an exponential distribution is not allowed. ";
+        EV_ERROR << "Please check the correctness of your configuration file." << endl;
+        endSimulation();
+    }
+
+    if (!infiniteNormalCustomerQueueEnabled && (par("normalQueueSize").intValue() < 0) ) {
+        EV_ERROR << "A negative size of the normal customer queue is not allowed. ";
+        EV_ERROR << "Please check the correctness of your configuration file." << endl;
+        endSimulation();
+    }
+
+    if (!infiniteVipCustomerQueueEnabled && (par("vipQueueSize").intValue() < 0) ) {
+        EV_ERROR << "A negative size of the VIP customer queue is not allowed. ";
         EV_ERROR << "Please check the correctness of your configuration file." << endl;
         endSimulation();
     }
@@ -96,6 +110,28 @@ void Cashier::emitCustomerQueueSize(int numberOfCustomers, bool vipQueue)
     }
 }
 
+bool Cashier::isCustomerQueueFull(OrderMessage* newOrder)
+{
+    bool infiniteNormalCustomerQueueEnabled = par("infiniteNormalCustomerQueue").boolValue();
+    bool infiniteVipCustomerQueueEnabled = par("infiniteVipCustomerQueue").boolValue();
+    unsigned int maxVipQueueSize = (unsigned int) par("vipQueueSize").intValue();
+    unsigned int maxNormalQueueSize = (unsigned int) par("normalQueueSize").intValue();
+
+    if (newOrder->getVipPriority()) {
+        if (!infiniteVipCustomerQueueEnabled && (maxVipQueueSize == vipCustomerQueue.size())) {
+            EV << "A VIP order has been dropped. The VIP customer queue is full." << endl;
+            return true;
+        }
+    } else {
+        if (!infiniteNormalCustomerQueueEnabled && (maxNormalQueueSize == normalCustomerQueue.size())) {
+            EV << "A normal order has been dropped. The normal customer queue is full." << endl;
+            return true;
+        }
+    }
+
+    return false;
+}
+
 double Cashier::generateServiceTime()
 {
     double serviceTime = 0;
@@ -113,6 +149,10 @@ double Cashier::generateServiceTime()
 void Cashier::handleOrderArrival(cMessage* msg)
 {
     OrderMessage* newOrder = check_and_cast<OrderMessage*>(msg);
+
+    if (isCustomerQueueFull(newOrder))
+        return;
+
     newOrder->setCashierQueueArrivalTime(simTime());
 
     if(!busy) {
@@ -126,12 +166,14 @@ void Cashier::handleOrderArrival(cMessage* msg)
         if (newOrder->getVipPriority()) {
             vipCustomerQueue.push(newOrder);
             emitCustomerQueueSize(vipCustomerQueue.size(), true);
-            EV << "A new VIP customer joined the queue." << endl;
+            EV << "A new VIP customer joined the queue. ";
+            EV << "Number of customers in the queue: " << vipCustomerQueue.size() << endl;
         }
         else {
             normalCustomerQueue.push(newOrder);
             emitCustomerQueueSize(normalCustomerQueue.size(), false);
-            EV << "A new normal customer joined the queue." << endl;
+            EV << "A new normal customer joined the queue. ";
+            EV << "Number of customers in the queue: " << normalCustomerQueue.size() << endl;
         }
     }
 }
@@ -145,8 +187,7 @@ void Cashier::completeOrder()
     EV << "Order completed." << endl;
 
     if (vipCustomerQueue.empty() && normalCustomerQueue.empty()) {
-        // For pure "safety" reason: avoid to delete a message that leaved the node,
-        // though Omnet prevents doing it without the message ownership.
+        // For pure "safety" reason: avoid to delete a message that left the node
         orderUnderService = NULL;
 
         busy = false;
