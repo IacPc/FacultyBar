@@ -44,11 +44,11 @@ double OrderProducer::generateProductionTime()
 
     if (par("constantProductionDistribution").boolValue()) {
         productionTime = par("constantProductionMean").doubleValue();
-    } else if (par("exponentialProductionDistribution").boolValue()){
+    } else if (par("exponentialProductionDistribution").boolValue()) {
         productionTime = exponential(par("exponentialProductionMean").doubleValue(), par("rngNumber").intValue());
     }
 
-    EV << "New production time: " << productionTime << endl;
+    EV << "A new order went into production. Production time: " << productionTime << endl;
     return productionTime;
 }
 
@@ -77,5 +77,3 @@ void OrderProducer::handleMessage(cMessage* msg)
         sendNewOrder();
     }
 }
-
-

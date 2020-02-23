@@ -10,13 +10,18 @@ simple Cashier
         double constantServiceMean @unit(s) = default(0s);
         double exponentialServiceMean @unit(s) = default(0s);
         
+        bool infiniteNormalCustomerQueue = default(false);
+        bool infiniteVipCustomerQueue = default(false);
+        int normalQueueSize = default(0);
+        int vipQueueSize = default(0);
+        
         // Statistics
         @signal[waitingTimeNormalCustomerCashierQueue](type = simtime_t);
         @signal[waitingTimeVipCustomerCashierQueue](type = simtime_t);
         @signal[responseTimeNormalCustomerCashierNode](type = simtime_t);
         @signal[responseTimeVipCustomerCashierNode](type = simtime_t);
-        @signal[numberOfNormalCustomersCashierQueue](type = int);
-        @signal[numberOfVipCustomersCashierQueue](type = int);
+        @signal[numberOfNormalCustomersCashierQueue](type = long);
+        @signal[numberOfVipCustomersCashierQueue](type = long);
         
         @statistic[waitingTimeNormalCustomerCashierQueueStatistic](source = waitingTimeNormalCustomerCashierQueue; record = vector);
       	@statistic[waitingTimeVipCustomerCashierQueueStatistic](source = waitingTimeVipCustomerCashierQueue; record = vector);
