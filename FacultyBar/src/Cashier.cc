@@ -150,8 +150,10 @@ void Cashier::handleOrderArrival(cMessage* msg)
 {
     OrderMessage* newOrder = check_and_cast<OrderMessage*>(msg);
 
-    if (isCustomerQueueFull(newOrder))
+    if (isCustomerQueueFull(newOrder)) {
+        delete newOrder;
         return;
+    }
 
     newOrder->setCashierQueueArrivalTime(simTime());
 

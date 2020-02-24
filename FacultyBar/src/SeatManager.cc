@@ -140,7 +140,6 @@ bool SeatManager::isCustomerQueueFull()
     return false;
 }
 
-
 void SeatManager::handleLeavingCustomer(cMessage* msg)
 {
     OrderMessage* leavingCustomer = check_and_cast<OrderMessage*>(msg);
@@ -163,8 +162,10 @@ void SeatManager::handleArrivingCustomer(cMessage* msg)
 {
     OrderMessage* arrivingCustomer = check_and_cast<OrderMessage*>(msg);
 
-    if (isCustomerQueueFull())
+    if (isCustomerQueueFull()) {
+        delete arrivingCustomer;
         return;
+    }
 
     arrivingCustomer->setSeatManagerQueueArrivalTime(simTime());
 
