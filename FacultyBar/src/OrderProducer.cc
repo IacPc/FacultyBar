@@ -22,19 +22,19 @@ void OrderProducer::checkParametersValidity()
     if (constantDistributionEnabled == exponentialDistributionEnabled ) {
         EV_ERROR << "No distribution or multiple ones selected for the production time. ";
         EV_ERROR << "Please check the correctness of your configuration file." << endl;
-        endSimulation();
+        throw cRuntimeError("Invalid parameters");
     }
 
     if (constantDistributionEnabled && (par("constantProductionMean").doubleValue() < 0)) {
         EV_ERROR << "A negative mean value for a constant distribution is not allowed. ";
         EV_ERROR << "Please check the correctness of your configuration file." << endl;
-        endSimulation();
+        throw cRuntimeError("Invalid parameters");
     }
 
     if (exponentialDistributionEnabled && (par("exponentialProductionMean").doubleValue() < 0)) {
         EV_ERROR << "A negative mean value for an exponential distribution is not allowed. ";
         EV_ERROR << "Please check the correctness of your configuration file." << endl;
-        endSimulation();
+        throw cRuntimeError("Invalid parameters");
     }
 }
 

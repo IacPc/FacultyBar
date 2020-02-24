@@ -41,31 +41,31 @@ void Cashier::checkParametersValidity()
     if (constantDistributionEnabled == exponentialDistributionEnabled ) {
         EV_ERROR << "No distribution or multiple ones selected for the service time. ";
         EV_ERROR << "Please check the correctness of your configuration file." << endl;
-        endSimulation();
+        throw cRuntimeError("Invalid parameters");
     }
 
     if (constantDistributionEnabled && (par("constantServiceMean").doubleValue() < 0)) {
         EV_ERROR << "A negative mean value for a constant distribution is not allowed. ";
         EV_ERROR << "Please check the correctness of your configuration file." << endl;
-        endSimulation();
+        throw cRuntimeError("Invalid parameters");
     }
 
     if (exponentialDistributionEnabled && (par("exponentialServiceMean").doubleValue() < 0)) {
         EV_ERROR << "A negative mean value for an exponential distribution is not allowed. ";
         EV_ERROR << "Please check the correctness of your configuration file." << endl;
-        endSimulation();
+        throw cRuntimeError("Invalid parameters");
     }
 
     if (!infiniteNormalCustomerQueueEnabled && (par("normalQueueSize").intValue() < 0) ) {
         EV_ERROR << "A negative size of the normal customer queue is not allowed. ";
         EV_ERROR << "Please check the correctness of your configuration file." << endl;
-        endSimulation();
+        throw cRuntimeError("Invalid parameters");
     }
 
     if (!infiniteVipCustomerQueueEnabled && (par("vipQueueSize").intValue() < 0) ) {
         EV_ERROR << "A negative size of the VIP customer queue is not allowed. ";
         EV_ERROR << "Please check the correctness of your configuration file." << endl;
-        endSimulation();
+        throw cRuntimeError("Invalid parameters");
     }
 }
 
