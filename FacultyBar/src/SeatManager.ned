@@ -9,6 +9,8 @@ simple SeatManager
 		bool exponentialEatingDistribution = default(false);
 		double constantEatingMean @unit(s) = default(0s);
 		double exponentialEatingMean @unit(s) = default(0s);
+		bool infiniteCustomerQueue = default(false);
+        int queueSize = default(0);
 		int numberOfTables = default(0);
 		int numberOfSeatsPerTable = default(0);
 		

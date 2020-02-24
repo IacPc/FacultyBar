@@ -97,6 +97,12 @@ void SeatManager::checkParametersValidity()
         EV_ERROR << "Please check the correctness of your configuration file." << endl;
         throw cRuntimeError("Invalid parameters");
     }
+
+    if (par("infiniteCustomerQueue").boolValue() && (par("queueSize").intValue() < 0) ) {
+        EV_ERROR << "A negative size of the customer queue is not allowed. ";
+        EV_ERROR << "Please check the correctness of your configuration file." << endl;
+        throw cRuntimeError("Invalid parameters");
+    }
 }
 
 void SeatManager::emitWaitingTimeSignal(OrderMessage* msg)
@@ -121,6 +127,20 @@ void SeatManager::emitResponseTimeSignal(OrderMessage* msg)
         emit(responseTimeNormalCustomerTableNodeSignal, departureTime - arrivalTime);
 }
 
+bool SeatManager::isCustomerQueueFull()
+{
+    bool infiniteCustomerQueueEnabled = par("infiniteCustomerQueue").boolValue();
+    unsigned int maxQueueSize = (unsigned int) par("queueSize").intValue();
+
+    if (!infiniteCustomerQueueEnabled && (maxQueueSize == customerQueue.size())) {
+        EV << "An order has been dropped. The customer queue is full." << endl;
+        return true;
+    }
+
+    return false;
+}
+
+
 void SeatManager::handleLeavingCustomer(cMessage* msg)
 {
     OrderMessage* leavingCustomer = check_and_cast<OrderMessage*>(msg);
@@ -142,6 +162,10 @@ void SeatManager::handleLeavingCustomer(cMessage* msg)
 void SeatManager::handleArrivingCustomer(cMessage* msg)
 {
     OrderMessage* arrivingCustomer = check_and_cast<OrderMessage*>(msg);
+
+    if (isCustomerQueueFull())
+        return;
+
     arrivingCustomer->setSeatManagerQueueArrivalTime(simTime());
 
     if (tablesAreFull()) {    // All servers are busy and the customer goes in queue
