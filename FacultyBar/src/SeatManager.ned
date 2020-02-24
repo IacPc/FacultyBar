@@ -11,8 +11,7 @@ simple SeatManager
 		double exponentialEatingMean @unit(s) = default(0s);
 		bool infiniteCustomerQueue = default(false);
 		int queueSize = default(0);
-		int numberOfTables = default(0);
-		int numberOfSeatsPerTable = default(0);
+		int numberOfSeats = default(0);
 		
 		// Signals
 		@signal [waitingTimeNormalCustomerTableQueue](type = simtime_t);

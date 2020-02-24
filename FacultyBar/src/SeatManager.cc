@@ -18,8 +18,7 @@ void SeatManager::initialize()
     initializeStatisticSignals();
 
     // Reserve space for unordered_set to avoid rehashing when the actual size grows.
-    int numberOfSeats = par("numberOfTables").intValue()*par("numberOfSeatsPerTable").intValue();
-    customerSeated.reserve(numberOfSeats);
+    customerSeated.reserve(par("numberOfSeats"));
 
     // At the beginning, the queue is empty
     emit(numberOfCustomersTableQueueSignal, customerQueue.size());
@@ -44,7 +43,7 @@ SeatManager::~SeatManager()
 
 bool SeatManager::tablesAreFull()
 {
-    return (customerSeated.size() == (unsigned long)(par("numberOfTables").intValue()*par("numberOfSeatsPerTable").intValue()));
+    return (customerSeated.size() == (unsigned long) par("numberOfSeats").intValue());
 }
 
 double SeatManager::assignEatingTime()
@@ -92,8 +91,8 @@ void SeatManager::checkParametersValidity()
         throw cRuntimeError("Invalid parameters");
     }
 
-    if (par("numberOfTables").intValue() < 0 || par("numberOfSeatsPerTable").intValue() < 0) {
-        EV_ERROR << "A negative number of tables/seats per table is not allowed. ";
+    if (par("numberOfSeats").intValue() < 0) {
+        EV_ERROR << "A negative number of seats is not allowed. ";
         EV_ERROR << "Please check the correctness of your configuration file." << endl;
         throw cRuntimeError("Invalid parameters");
     }
