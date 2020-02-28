@@ -57,6 +57,13 @@ void OrderProducer::sendNewOrder()
     OrderMessage* newOrder = new OrderMessage("orderMessage");
     newOrder->setVipPriority(par("vipPriority").boolValue());
 
+    if (!newOrder->getVipPriority()) {
+        // Normal customers will have lower FES scheduling priority, such that
+        // if a normal customer arrives at the cashier at the same simulation time of a VIP customer,
+        // the VIP one will always be served before.
+        newOrder->setSchedulingPriority(1);
+    }
+
     send(newOrder, "out");
     EV << "New order sent." << endl;
 
