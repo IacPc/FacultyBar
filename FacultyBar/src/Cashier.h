@@ -31,7 +31,7 @@ class Cashier : public cSimpleModule
     void emitWaitingTime(OrderMessage* customerOrder);
     void emitResponseTime(OrderMessage* customerOrder);
     void emitCustomerQueueSize(int numberOfCustomers, bool vipQueue);
-    bool isCustomerQueueFull(OrderMessage* newOrder);
+    bool customerQueueIsFull(OrderMessage* newOrder);
     double generateServiceTime();
     void handleOrderArrival(cMessage* msg);
     void completeOrder();

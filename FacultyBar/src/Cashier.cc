@@ -110,7 +110,7 @@ void Cashier::emitCustomerQueueSize(int numberOfCustomers, bool vipQueue)
     }
 }
 
-bool Cashier::isCustomerQueueFull(OrderMessage* newOrder)
+bool Cashier::customerQueueIsFull(OrderMessage* newOrder)
 {
     bool infiniteNormalCustomerQueueEnabled = par("infiniteNormalCustomerQueue").boolValue();
     bool infiniteVipCustomerQueueEnabled = par("infiniteVipCustomerQueue").boolValue();
@@ -150,7 +150,7 @@ void Cashier::handleOrderArrival(cMessage* msg)
 {
     OrderMessage* newOrder = check_and_cast<OrderMessage*>(msg);
 
-    if (isCustomerQueueFull(newOrder)) {
+    if (customerQueueIsFull(newOrder)) {
         delete newOrder;
         return;
     }

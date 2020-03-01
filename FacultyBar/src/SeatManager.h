@@ -27,7 +27,7 @@ class SeatManager : public cSimpleModule
     void emitWaitingTimeSignal(OrderMessage*);
     void emitResponseTimeSignal(OrderMessage*);
     bool tablesAreFull();
-    bool isCustomerQueueFull();
+    bool customerQueueIsFull();
     double assignEatingTime();
     OrderMessage* removeCustomerFromQueue();
     void handleLeavingCustomer(cMessage*);

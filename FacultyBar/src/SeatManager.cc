@@ -126,7 +126,7 @@ void SeatManager::emitResponseTimeSignal(OrderMessage* msg)
         emit(responseTimeNormalCustomerTableNodeSignal, departureTime - arrivalTime);
 }
 
-bool SeatManager::isCustomerQueueFull()
+bool SeatManager::customerQueueIsFull()
 {
     bool infiniteCustomerQueueEnabled = par("infiniteCustomerQueue").boolValue();
     unsigned int maxQueueSize = (unsigned int) par("queueSize").intValue();
@@ -161,7 +161,7 @@ void SeatManager::handleArrivingCustomer(cMessage* msg)
 {
     OrderMessage* arrivingCustomer = check_and_cast<OrderMessage*>(msg);
 
-    if (isCustomerQueueFull()) {
+    if (customerQueueIsFull()) {
         delete arrivingCustomer;
         return;
     }
