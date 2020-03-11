@@ -77,6 +77,8 @@ void Cashier::initializeStatisticSignals()
     responseTimeVipCustomerCashierNodeSignal = registerSignal("responseTimeVipCustomerCashierNode");
     numberOfNormalCustomersCashierQueueSignal = registerSignal("numberOfNormalCustomersCashierQueue");
     numberOfVipCustomersCashierQueueSignal = registerSignal("numberOfVipCustomersCashierQueue");
+    normalCustomerDropRateCashierSignal = registerSignal("normalCustomerDropRateCashier");
+    vipCustomerDropRateCashierSignal = registerSignal("vipCustomerDropRateCashier");
 }
 
 void Cashier::emitWaitingTime(OrderMessage* customerOrder)
@@ -110,6 +112,15 @@ void Cashier::emitCustomerQueueSize(int numberOfCustomers, bool vipQueue)
     }
 }
 
+void Cashier::emitDropRate(int numberOfLostCustomers, bool vipCustomer)
+{
+    if (vipCustomer) {
+        emit(vipCustomerDropRateCashierSignal, numberOfLostCustomers);
+    } else {
+        emit(normalCustomerDropRateCashierSignal, numberOfLostCustomers);
+    }
+}
+
 bool Cashier::customerQueueIsFull(OrderMessage* newOrder)
 {
     bool infiniteNormalCustomerQueueEnabled = par("infiniteNormalCustomerQueue").boolValue();
@@ -117,19 +128,26 @@ bool Cashier::customerQueueIsFull(OrderMessage* newOrder)
     unsigned int maxVipQueueSize = (unsigned int) par("vipQueueSize").intValue();
     unsigned int maxNormalQueueSize = (unsigned int) par("normalQueueSize").intValue();
 
-    if (newOrder->getVipPriority()) {
+    bool fullQueue = false;
+    bool vipCustomer = newOrder->getVipPriority();
+    int numberOfLostCustomers = 0;
+
+    if (vipCustomer) {
         if (!infiniteVipCustomerQueueEnabled && (maxVipQueueSize == vipCustomerQueue.size())) {
+            fullQueue = true;
+            numberOfLostCustomers = 1;
             EV << "A VIP order has been dropped. The VIP customer queue is full." << endl;
-            return true;
         }
     } else {
         if (!infiniteNormalCustomerQueueEnabled && (maxNormalQueueSize == normalCustomerQueue.size())) {
+            fullQueue = true;
+            numberOfLostCustomers = 1;
             EV << "A normal order has been dropped. The normal customer queue is full." << endl;
-            return true;
         }
     }
 
-    return false;
+    emitDropRate(numberOfLostCustomers, vipCustomer);
+    return fullQueue;
 }
 
 double Cashier::generateServiceTime()

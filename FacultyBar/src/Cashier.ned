@@ -21,15 +21,19 @@ simple Cashier
         @signal[responseTimeNormalCustomerCashierNode](type = simtime_t);
         @signal[responseTimeVipCustomerCashierNode](type = simtime_t);
         @signal[numberOfNormalCustomersCashierQueue](type = long);
-        @signal[numberOfVipCustomersCashierQueue](type = long);
+        @signal[numberOfVipCustomersCashierQueue](type = long);        
+        @signal[normalCustomerDropRateCashier](type = double);
+        @signal[vipCustomerDropRateCashier](type = double);
         
         @statistic[waitingTimeNormalCustomerCashierQueueStatistic](source = waitingTimeNormalCustomerCashierQueue; record = vector);
       	@statistic[waitingTimeVipCustomerCashierQueueStatistic](source = waitingTimeVipCustomerCashierQueue; record = vector);
       	@statistic[responseTimeNormalCustomerCashierNodeStatistic](source = responseTimeNormalCustomerCashierNode; record = vector);
       	@statistic[responseTimeVipCustomerCashierNodeStatistic](source = responseTimeVipCustomerCashierNode; record = vector);
-      	@statistic[numberOfNormalCustomersCashierQueueStatistic](source = numberOfNormalCustomersCashierQueue; record = vector);
-      	@statistic[numberOfVipCustomersCashierQueueStatistic](source = numberOfVipCustomersCashierQueue; record = vector);
-      
+      	@statistic[numberOfNormalCustomersCashierQueueStatistic](source = numberOfNormalCustomersCashierQueue; record = vector, timeavg);
+      	@statistic[numberOfVipCustomersCashierQueueStatistic](source = numberOfVipCustomersCashierQueue; record = vector, timeavg);
+      	@statistic[normalCustomerDropRateCashierStatistic](source = normalCustomerDropRateCashier; record = mean);
+      	@statistic[vipCustomerDropRateCashierStatistic](source = vipCustomerDropRateCashier; record = mean);
+      	
     gates:
         input in[2];
         output out;

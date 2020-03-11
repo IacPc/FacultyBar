@@ -25,12 +25,15 @@ class Cashier : public cSimpleModule
     simsignal_t responseTimeVipCustomerCashierNodeSignal;
     simsignal_t numberOfNormalCustomersCashierQueueSignal;
     simsignal_t numberOfVipCustomersCashierQueueSignal;
+    simsignal_t normalCustomerDropRateCashierSignal;
+    simsignal_t vipCustomerDropRateCashierSignal;
 
     void checkParametersValidity();
     void initializeStatisticSignals();
     void emitWaitingTime(OrderMessage* customerOrder);
     void emitResponseTime(OrderMessage* customerOrder);
     void emitCustomerQueueSize(int numberOfCustomers, bool vipQueue);
+    void emitDropRate(int numberOfLostCustomers, bool vipCustomer);
     bool customerQueueIsFull(OrderMessage* newOrder);
     double generateServiceTime();
     void handleOrderArrival(cMessage* msg);

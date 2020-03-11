@@ -10,6 +10,8 @@ void SeatManager::initializeStatisticSignals()
     responseTimeNormalCustomerTableNodeSignal = registerSignal("responseTimeNormalCustomerTableNode");
     responseTimeVipCustomerTableNodeSignal = registerSignal("responseTimeVipCustomerTableNode");
     numberOfCustomersTableQueueSignal = registerSignal("numberOfCustomersTableQueue");
+    customerDropRateTableSignal = registerSignal("customerDropRateTable");
+    throughputSignal = registerSignal("throughput");
 }
 
 void SeatManager::initialize()
@@ -22,6 +24,8 @@ void SeatManager::initialize()
 
     // At the beginning, the queue is empty
     emit(numberOfCustomersTableQueueSignal, customerQueue.size());
+
+    numberOfServedCustomers = 0;
 }
 
 SeatManager::~SeatManager()
@@ -132,10 +136,12 @@ bool SeatManager::customerQueueIsFull()
     unsigned int maxQueueSize = (unsigned int) par("queueSize").intValue();
 
     if (!infiniteCustomerQueueEnabled && (maxQueueSize == customerQueue.size())) {
+        emit(customerDropRateTableSignal, 1);
         EV << "An order has been dropped. The customer queue is full." << endl;
         return true;
     }
 
+    emit(customerDropRateTableSignal, 0);
     return false;
 }
 
@@ -143,8 +149,10 @@ void SeatManager::handleLeavingCustomer(cMessage* msg)
 {
     OrderMessage* leavingCustomer = check_and_cast<OrderMessage*>(msg);
 
+    numberOfServedCustomers++;
     leavingCustomer->setSeatManagerNodeDepartureTime(simTime());
     emitResponseTimeSignal(leavingCustomer);
+    emit(throughputSignal, numberOfServedCustomers/simTime());
 
     customerSeated.erase(leavingCustomer);
     delete leavingCustomer;
