@@ -131,10 +131,10 @@ def main():
     """
 
     """
-    plot_qq("waitingTimeVipCustomerCashierQueueStatistic", qq_data, x_axis_name="Waiting time VIP customer", y_axis_name="Exponential quantiles")
-    plot_qq("responseTimeVipCustomerCashierNodeStatistic", qq_data, x_axis_name="Response time VIP customer [s]", y_axis_name="Exponential quantiles")
-    plot_qq("waitingTimeNormalCustomerCashierQueueStatistic", qq_data, x_axis_name="Waiting time normal customer [s]", y_axis_name="Exponential quantiles")
-    plot_qq("responseTimeNormalCustomerCashierNodeStatistic", qq_data, x_axis_name="Response time normal customer [s]", y_axis_name="Exponential quantiles")
+    plot_qq("waitingTimeVipCustomerCashierQueueStatistic", qq_data, y_axis_name="Waiting time VIP customer", x_axis_name="Exponential quantiles")
+    plot_qq("responseTimeVipCustomerCashierNodeStatistic", qq_data, y_axis_name="Response time VIP customer [s]", x_axis_name="Exponential quantiles")
+    plot_qq("waitingTimeNormalCustomerCashierQueueStatistic", qq_data, y_axis_name="Waiting time normal customer [s]", x_axis_name="Exponential quantiles")
+    plot_qq("responseTimeNormalCustomerCashierNodeStatistic", qq_data, y_axis_name="Response time normal customer [s]", x_axis_name="Exponential quantiles")
     """
 
 
