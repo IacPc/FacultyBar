@@ -194,7 +194,7 @@ class StatisticDataFrame:
         if CoV < 0 or CoV > check_bound:
             exit("ERROR: the coefficient of variation is less than 0 or greater than sqrt(n-1)")
 
-        return sample_std/sample_mean
+        return CoV
 
     '''
     Executes a linear regression analysis between two list of observations x and y; the model is y = ax + b.
