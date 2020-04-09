@@ -82,25 +82,25 @@ def main():
     '''************* DATA ANALYSIS *************'''
     start_time = time()
 
-    ECDF_data = dataframe.get_ECDF_data(statistic_list, cashier_level, confidence_level)
-    ECDF_no_error = dataframe.get_ECDF_data(statistic_list, cashier_level, confidence_level=None)
-    Lorenz_data = dataframe.get_Lorenz_Curve_data(statistic_list, cashier_level)
-    histogram_data = dataframe.get_histogram_data(statistic_list, cashier_level, number_bins=10)
-    qq_data = dataframe.get_qq_plot_data(statistic_list, cashier_level, theoretical_distribution="exponential")
-    sample_mean = dataframe.get_sample_mean(statistic_list, cashier_level, confidence_level)
-    sample_median = dataframe.get_sample_median(statistic_list, cashier_level)
-    sample_CoV = dataframe.get_sample_coefficient_of_variation(statistic_list, cashier_level)
+    #ECDF_data = dataframe.get_ECDF_data(statistic_list, cashier_level, confidence_level)
+    #ECDF_no_error = dataframe.get_ECDF_data(statistic_list, cashier_level, confidence_level=None)
+    #Lorenz_data = dataframe.get_Lorenz_Curve_data(statistic_list, cashier_level)
+    #histogram_data = dataframe.get_histogram_data(statistic_list, cashier_level, number_bins=200)
+    #qq_data = dataframe.get_qq_plot_data(statistic_list, cashier_level, theoretical_distribution="weibull", weibull_shape=1.2)
+    #sample_mean = dataframe.get_sample_mean(statistic_list, cashier_level, confidence_level)
+    #sample_median = dataframe.get_sample_median(statistic_list, cashier_level)
+    #sample_CoV = dataframe.get_sample_coefficient_of_variation(statistic_list, cashier_level)
 
     print("Data analysis completed")
     print("--- %s seconds ---" % (time() - start_time))
 
     '''************* DATA PLOT *************'''
 
-    """
-    pprint(sample_mean)
-    pprint(sample_median)
-    pprint(sample_CoV)
-    """
+    #"""
+    #pprint(sample_mean)
+    #pprint(sample_median)
+    #pprint(sample_CoV)
+    #"""
 
     """
     plot_statistic("waitingTimeVipCustomerCashierQueueStatistic", ECDF_data, plot_profile="ecdf", x_axis_name="Waiting time VIP customer [s]", y_axis_name="Probability")
@@ -137,6 +137,12 @@ def main():
     plot_qq("responseTimeNormalCustomerCashierNodeStatistic", qq_data, y_axis_name="Response time normal customer [s]", x_axis_name="Exponential quantiles")
     """
 
+    """
+    plot_qq("waitingTimeVipCustomerCashierQueueStatistic", qq_data, y_axis_name="Waiting time VIP customer", x_axis_name="Weibull quantiles")
+    plot_qq("responseTimeVipCustomerCashierNodeStatistic", qq_data, y_axis_name="Response time VIP customer [s]", x_axis_name="Weibull quantiles")
+    plot_qq("waitingTimeNormalCustomerCashierQueueStatistic", qq_data, y_axis_name="Waiting time normal customer [s]", x_axis_name="Weibull quantiles")
+    plot_qq("responseTimeNormalCustomerCashierNodeStatistic", qq_data, y_axis_name="Response time normal customer [s]", x_axis_name="Weibull quantiles")
+    """
 
 if __name__ == "__main__":
     main()
