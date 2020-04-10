@@ -86,9 +86,9 @@ def main():
     #ECDF_no_error = dataframe.get_ECDF_data(statistic_list, cashier_level, confidence_level=None)
     #Lorenz_data = dataframe.get_Lorenz_Curve_data(statistic_list, cashier_level)
     #histogram_data = dataframe.get_histogram_data(statistic_list, cashier_level, number_bins=200)
-    #qq_data = dataframe.get_qq_plot_data(statistic_list, cashier_level, theoretical_distribution="weibull", weibull_shape=1.2)
+    #qq_data = dataframe.get_qq_plot_data(statistic_list, cashier_level, theoretical_distribution="weibull", weibull_shape=2)
     #sample_mean = dataframe.get_sample_mean(statistic_list, cashier_level, confidence_level)
-    #sample_median = dataframe.get_sample_median(statistic_list, cashier_level)
+    #sample_median = dataframe.get_sample_median(statistic_list, cashier_level, confidence_level)
     #sample_CoV = dataframe.get_sample_coefficient_of_variation(statistic_list, cashier_level)
 
     print("Data analysis completed")
@@ -96,11 +96,11 @@ def main():
 
     '''************* DATA PLOT *************'''
 
-    #"""
-    #pprint(sample_mean)
-    #pprint(sample_median)
-    #pprint(sample_CoV)
-    #"""
+    """
+    pprint(sample_mean)
+    pprint(sample_median)
+    pprint(sample_CoV)
+    """
 
     """
     plot_statistic("waitingTimeVipCustomerCashierQueueStatistic", ECDF_data, plot_profile="ecdf", x_axis_name="Waiting time VIP customer [s]", y_axis_name="Probability")

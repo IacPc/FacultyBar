@@ -164,11 +164,15 @@ class StatisticDataFrame:
 
     '''
     Computes the sample mean of the given list of observations and its confidence interval at the specified level.
+    The confidence interval is computed supposing a number of observations higher than 30.
     '''
     def __compute_sample_mean(self, obs_vector, confidence_level):
         alpha = 1-confidence_level
         standard_normal_quantile = scipy.stats.norm.ppf(1-alpha/2)
         obs_number = len(obs_vector)
+
+        if obs_number < 30:
+            print("WARNING: the number of observations used to compute the confidence interval for the mean is not high enough")
 
         sample_mean = np.mean(obs_vector, dtype=np.float64)
         sample_std = np.std(obs_vector, ddof=1, dtype=np.float64)
@@ -177,10 +181,29 @@ class StatisticDataFrame:
         return sample_mean, error
 
     '''
-    Computes the sample median of the given list of observations.
+    Computes the sample median of the given list of observations and its confidence interval at the specified level.
+    Returns a tuple (sample_median, lower_error, upper_error), where the errors are in a format suitable for a plot.
+    The confidence interval is computed as follows: given the ordered statistics X1, X2, ..., Xn and supposing n > 30,
+    the CI is obtained in the form [Xj, Xk] and returned as a couple representing the distances between 
+    the sample median and the extremes of the interval.
     '''
-    def __compute_sample_median(self, obs_vector):
-        return np.median(obs_vector)
+    def __compute_sample_median(self, obs_vector, confidence_level):
+        alpha = 1 - confidence_level
+        standard_normal_quantile = scipy.stats.norm.ppf(1 - alpha/2)
+        obs_number = len(obs_vector)
+        ordered_statistics = np.sort(obs_vector, axis=None)
+
+        if obs_number < 30:
+            print("WARNING: the number of observations used to compute the confidence interval for the median is not high enough")
+
+        CI_lower_obs_number = math.floor(obs_number*0.5 - standard_normal_quantile*math.sqrt(obs_number*0.5*0.5))
+        CI_upper_obs_number = math.ceil(obs_number*0.5 + standard_normal_quantile*math.sqrt(obs_number*0.5*0.5)) + 1
+
+        sample_median = np.median(obs_vector)
+        CI_lower_bound = ordered_statistics[CI_lower_obs_number + 1]
+        CI_upper_bound = ordered_statistics[CI_upper_obs_number + 1]
+
+        return sample_median, sample_median-CI_lower_bound, CI_upper_bound-sample_median
 
     '''
     Computes the coefficient of variation of the given list of observations.
@@ -392,7 +415,7 @@ class StatisticDataFrame:
     Returns a dictionary where each key is the name of a statistic and each value is a list of tuples 
     with the format (cashier_label, sample_median).
     '''
-    def get_sample_median(self, statistic_list, cashier_list):
+    def get_sample_median(self, statistic_list, cashier_list, confidence_level):
         median_dict = dict()
 
         for statistic_name in statistic_list:
@@ -403,9 +426,9 @@ class StatisticDataFrame:
                 repetition_by_cashier = repetition_dataframe[repetition_dataframe["cashiervalue"] == cashier_value]
                 obs_vector = self._get_all_vecvalues_obervations(repetition_by_cashier, sort_values=False)
 
-                median = self.__compute_sample_median(obs_vector)
+                median, lower_error, upper_error = self.__compute_sample_median(obs_vector, confidence_level)
                 cashier_label = r'$T_{CASHIER} = ' + cashier_value + '$'
-                statistic_data.append((cashier_label, median))
+                statistic_data.append((cashier_label, median, lower_error, upper_error))
 
             median_dict[statistic_name] = statistic_data
 
