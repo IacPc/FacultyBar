@@ -242,7 +242,8 @@ class StatisticDataFrame:
     2) regr_equation is a string containing the mathematical equation of the regression line
        and the obtained coefficient of determination R^2.
     '''
-    def __compute_qq_plot_points(self, obs_vector, theoretical_distribution, weibull_shape):
+    def __compute_qq_plot_points(self, obs_vector, theoretical_distribution, poisson_mean, binomial_n,
+                                 binomial_p, geometric_prob, weibull_shape):
         ordered_statistics = sorted(obs_vector)
         theoretical_quantiles = []
 
@@ -256,11 +257,11 @@ class StatisticDataFrame:
         elif theoretical_distribution == "uniform":
             theoretical_quantiles = scipy.stats.uniform.ppf(quantile_number).tolist()
         elif theoretical_distribution == "poisson":
-            theoretical_quantiles = scipy.stats.poisson.ppf(quantile_number).tolist()
+            theoretical_quantiles = scipy.stats.poisson.ppf(quantile_number, poisson_mean).tolist()
         elif theoretical_distribution == "binomial":
-            theoretical_quantiles = scipy.stats.binom.ppf(quantile_number).tolist()
+            theoretical_quantiles = scipy.stats.binom.ppf(quantile_number, binomial_n, binomial_p).tolist()
         elif theoretical_distribution == "geometric":
-            theoretical_quantiles = scipy.stats.geom.ppf(quantile_number).tolist()
+            theoretical_quantiles = scipy.stats.geom.ppf(quantile_number, geometric_prob).tolist()
         elif theoretical_distribution == "weibull":
             theoretical_quantiles = scipy.stats.weibull_min.ppf(quantile_number, weibull_shape).tolist()
         else:
@@ -466,7 +467,8 @@ class StatisticDataFrame:
     2) cashier_label is a list of strings specifying as first element the cashier level and as second
         the equation of the regression line with the coefficient of determination R^2.
     '''
-    def get_qq_plot_data(self, statistic_list, cashier_list, theoretical_distribution="normal", weibull_shape=None):
+    def get_qq_plot_data(self, statistic_list, cashier_list, theoretical_distribution="normal", poisson_mean=None, binomial_n=None,
+                                 binomial_p=None, geometric_prob=None, weibull_shape=None):
         qq_dict = dict()
 
         for statistic_name in statistic_list:
@@ -477,7 +479,8 @@ class StatisticDataFrame:
                 repetition_by_cashier = repetition_dataframe[repetition_dataframe["cashiervalue"] == cashier_value]
                 obs_vector = self._get_all_vecvalues_obervations(repetition_by_cashier, sort_values=False)
 
-                theor_quant, ordered_stats, regr_x, regr_y, regr_equation = self.__compute_qq_plot_points(obs_vector, theoretical_distribution, weibull_shape)
+                theor_quant, ordered_stats, regr_x, regr_y, regr_equation = self.__compute_qq_plot_points(obs_vector, theoretical_distribution, poisson_mean, binomial_n,
+                                                                                                          binomial_p, geometric_prob, weibull_shape)
 
                 cashier_label = [r'$T_{CASHIER} = ' + cashier_value + '$', regr_equation]
                 statistic_data.append((cashier_label, theor_quant, ordered_stats, regr_x, regr_y))
