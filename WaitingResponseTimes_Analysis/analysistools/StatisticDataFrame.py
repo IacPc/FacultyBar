@@ -63,7 +63,7 @@ class StatisticDataFrame:
     of elements, which is returned.
     If sort_values is True, the list is sorted in ascending order.
     '''
-    def _get_all_vecvalues_obervations(self, dataframe, sort_values):
+    def __get_all_vecvalues_obervations(self, dataframe, sort_values):
         veclist = []
         for i, row in dataframe.iterrows():
             vecvalue = [float(n) for n in row["vecvalue"].split()]
@@ -242,8 +242,7 @@ class StatisticDataFrame:
     2) regr_equation is a string containing the mathematical equation of the regression line
        and the obtained coefficient of determination R^2.
     '''
-    def __compute_qq_plot_points(self, obs_vector, theoretical_distribution, poisson_mean, binomial_n,
-                                 binomial_p, geometric_prob, weibull_shape):
+    def __compute_qq_plot_points(self, obs_vector, theoretical_distribution, weibull_shape):
         ordered_statistics = sorted(obs_vector)
         theoretical_quantiles = []
 
@@ -256,12 +255,6 @@ class StatisticDataFrame:
             theoretical_quantiles = scipy.stats.expon.ppf(quantile_number).tolist()
         elif theoretical_distribution == "uniform":
             theoretical_quantiles = scipy.stats.uniform.ppf(quantile_number).tolist()
-        elif theoretical_distribution == "poisson":
-            theoretical_quantiles = scipy.stats.poisson.ppf(quantile_number, poisson_mean).tolist()
-        elif theoretical_distribution == "binomial":
-            theoretical_quantiles = scipy.stats.binom.ppf(quantile_number, binomial_n, binomial_p).tolist()
-        elif theoretical_distribution == "geometric":
-            theoretical_quantiles = scipy.stats.geom.ppf(quantile_number, geometric_prob).tolist()
         elif theoretical_distribution == "weibull":
             theoretical_quantiles = scipy.stats.weibull_min.ppf(quantile_number, weibull_shape).tolist()
         else:
@@ -315,7 +308,7 @@ class StatisticDataFrame:
                 repetition_by_cashier = repetition_dataframe[repetition_dataframe["cashiervalue"] == cashier_value]
 
                 if confidence_level is None:
-                    obs_vector = self._get_all_vecvalues_obervations(repetition_by_cashier, sort_values=True)
+                    obs_vector = self.__get_all_vecvalues_obervations(repetition_by_cashier, sort_values=True)
                     error_vector = None
                 else:
                     repetition_veclist = self.__get_list_of_converted_vecvalues(repetition_by_cashier, sort_values=True)
@@ -349,7 +342,7 @@ class StatisticDataFrame:
 
             for cashier_value in cashier_list:
                 repetition_by_cashier = repetition_dataframe[repetition_dataframe["cashiervalue"] == cashier_value]
-                obs_vector = self._get_all_vecvalues_obervations(repetition_by_cashier, sort_values=True)
+                obs_vector = self.__get_all_vecvalues_obervations(repetition_by_cashier, sort_values=True)
                 Lorenz_x_vector, Lorenz_y_vector = self.__compute_Lorenz_points(obs_vector)
 
                 cashier_label = r'$T_{CASHIER} = ' + cashier_value + '$'
@@ -376,7 +369,7 @@ class StatisticDataFrame:
 
             for cashier_value in cashier_list:
                 repetition_by_cashier = repetition_dataframe[repetition_dataframe["cashiervalue"] == cashier_value]
-                obs_vector = self._get_all_vecvalues_obervations(repetition_by_cashier, sort_values=False)
+                obs_vector = self.__get_all_vecvalues_obervations(repetition_by_cashier, sort_values=False)
 
                 cashier_label = r'$T_{CASHIER} = ' + cashier_value + '$'
                 statistic_data.append((cashier_label, obs_vector, number_bins))
@@ -401,7 +394,7 @@ class StatisticDataFrame:
 
             for cashier_value in cashier_list:
                 repetition_by_cashier = repetition_dataframe[repetition_dataframe["cashiervalue"] == cashier_value]
-                obs_vector = self._get_all_vecvalues_obervations(repetition_by_cashier, sort_values=False)
+                obs_vector = self.__get_all_vecvalues_obervations(repetition_by_cashier, sort_values=False)
 
                 sample_mean, error = self.__compute_sample_mean(obs_vector, confidence_level)
                 cashier_label = r'$T_{CASHIER} = ' + cashier_value + '$'
@@ -414,7 +407,7 @@ class StatisticDataFrame:
     '''
     Computes the sample median for all the statistics in statistic_list, divided by cashier value.
     Returns a dictionary where each key is the name of a statistic and each value is a list of tuples 
-    with the format (cashier_label, sample_median).
+    with the format (cashier_label, sample_median, lower_error, upper_error).
     '''
     def get_sample_median(self, statistic_list, cashier_list, confidence_level):
         median_dict = dict()
@@ -425,7 +418,7 @@ class StatisticDataFrame:
 
             for cashier_value in cashier_list:
                 repetition_by_cashier = repetition_dataframe[repetition_dataframe["cashiervalue"] == cashier_value]
-                obs_vector = self._get_all_vecvalues_obervations(repetition_by_cashier, sort_values=False)
+                obs_vector = self.__get_all_vecvalues_obervations(repetition_by_cashier, sort_values=False)
 
                 median, lower_error, upper_error = self.__compute_sample_median(obs_vector, confidence_level)
                 cashier_label = r'$T_{CASHIER} = ' + cashier_value + '$'
@@ -449,7 +442,7 @@ class StatisticDataFrame:
 
             for cashier_value in cashier_list:
                 repetition_by_cashier = repetition_dataframe[repetition_dataframe["cashiervalue"] == cashier_value]
-                obs_vector = self._get_all_vecvalues_obervations(repetition_by_cashier, sort_values=False)
+                obs_vector = self.__get_all_vecvalues_obervations(repetition_by_cashier, sort_values=False)
 
                 CoV = self.__compute_sample_coefficient_of_variation(obs_vector)
                 cashier_label = r'$T_{CASHIER} = ' + cashier_value + '$'
@@ -467,8 +460,7 @@ class StatisticDataFrame:
     2) cashier_label is a list of strings specifying as first element the cashier level and as second
         the equation of the regression line with the coefficient of determination R^2.
     '''
-    def get_qq_plot_data(self, statistic_list, cashier_list, theoretical_distribution="normal", poisson_mean=None, binomial_n=None,
-                                 binomial_p=None, geometric_prob=None, weibull_shape=None):
+    def get_qq_plot_data(self, statistic_list, cashier_list, theoretical_distribution="normal", weibull_shape=None):
         qq_dict = dict()
 
         for statistic_name in statistic_list:
@@ -477,10 +469,9 @@ class StatisticDataFrame:
 
             for cashier_value in cashier_list:
                 repetition_by_cashier = repetition_dataframe[repetition_dataframe["cashiervalue"] == cashier_value]
-                obs_vector = self._get_all_vecvalues_obervations(repetition_by_cashier, sort_values=False)
+                obs_vector = self.__get_all_vecvalues_obervations(repetition_by_cashier, sort_values=False)
 
-                theor_quant, ordered_stats, regr_x, regr_y, regr_equation = self.__compute_qq_plot_points(obs_vector, theoretical_distribution, poisson_mean, binomial_n,
-                                                                                                          binomial_p, geometric_prob, weibull_shape)
+                theor_quant, ordered_stats, regr_x, regr_y, regr_equation = self.__compute_qq_plot_points(obs_vector, theoretical_distribution, weibull_shape)
 
                 cashier_label = [r'$T_{CASHIER} = ' + cashier_value + '$', regr_equation]
                 statistic_data.append((cashier_label, theor_quant, ordered_stats, regr_x, regr_y))
