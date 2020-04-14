@@ -24,6 +24,7 @@ simple Cashier
         @signal[numberOfVipCustomersCashierQueue](type = long);        
         @signal[normalCustomerDropRateCashier](type = double);
         @signal[vipCustomerDropRateCashier](type = double);
+        @signal[interDepartureTimeCashier](type = simtime_t);
         
         @statistic[waitingTimeNormalCustomerCashierQueueStatistic](source = waitingTimeNormalCustomerCashierQueue; record = vector);
       	@statistic[waitingTimeVipCustomerCashierQueueStatistic](source = waitingTimeVipCustomerCashierQueue; record = vector);
@@ -33,6 +34,7 @@ simple Cashier
       	@statistic[numberOfVipCustomersCashierQueueStatistic](source = numberOfVipCustomersCashierQueue; record = vector, timeavg);
       	@statistic[normalCustomerDropRateCashierStatistic](source = normalCustomerDropRateCashier; record = mean);
       	@statistic[vipCustomerDropRateCashierStatistic](source = vipCustomerDropRateCashier; record = mean);
+      	@statistic[interDepartureTimeCashierStatistic](source = interDepartureTimeCashier; record = vector);
       	
     gates:
         input in[2];

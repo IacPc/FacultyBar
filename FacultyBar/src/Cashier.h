@@ -16,6 +16,7 @@ class Cashier : public cSimpleModule
     OrderMessage* orderUnderService;
     std::queue<OrderMessage*> vipCustomerQueue;
     std::queue<OrderMessage*> normalCustomerQueue;
+    simtime_t lastDepartureTime;
     bool busy;
 
     // Signals
@@ -27,6 +28,7 @@ class Cashier : public cSimpleModule
     simsignal_t numberOfVipCustomersCashierQueueSignal;
     simsignal_t normalCustomerDropRateCashierSignal;
     simsignal_t vipCustomerDropRateCashierSignal;
+    simsignal_t interDepartureTimeCashierSignal;
 
     void checkParametersValidity();
     void initializeStatisticSignals();

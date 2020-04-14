@@ -79,6 +79,7 @@ void Cashier::initializeStatisticSignals()
     numberOfVipCustomersCashierQueueSignal = registerSignal("numberOfVipCustomersCashierQueue");
     normalCustomerDropRateCashierSignal = registerSignal("normalCustomerDropRateCashier");
     vipCustomerDropRateCashierSignal = registerSignal("vipCustomerDropRateCashier");
+    interDepartureTimeCashierSignal = registerSignal("interDepartureTimeCashier");
 }
 
 void Cashier::emitWaitingTime(OrderMessage* customerOrder)
@@ -203,6 +204,9 @@ void Cashier::completeOrder()
     orderUnderService->setCashierNodeDepartureTime(simTime());
     emitResponseTime(orderUnderService);
 
+    emit(interDepartureTimeCashierSignal, simTime()-lastDepartureTime);
+    lastDepartureTime = simTime();
+
     send(orderUnderService, "out");
     EV << "Order completed." << endl;
 
@@ -238,6 +242,7 @@ void Cashier::initialize()
 
     timerMessage = new cMessage("timerMessage");
     busy = false;
+    lastDepartureTime = simTime();
 
     // At the beginning, both queues are empty
     emitCustomerQueueSize(normalCustomerQueue.size(), false);
