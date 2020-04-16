@@ -58,11 +58,11 @@ def get_throughput_at_each_sample_time(vecvalue_list, vectime_list, sampling_tim
 
 
 def plot_throughput(sampling_time, vectime_list, vecvalue_list, mean_throughput):
-    figure = plt.figure()
+    figure = plt.figure(figsize=(13.66, 7.68))
     plot_axes = plt.gca()
 
-    plot_axes.set_xlabel("Simulation time [s]", fontsize=12, labelpad=10)
-    plot_axes.set_ylabel("Throughput", fontsize=12, labelpad=10, rotation=90)
+    plot_axes.set_xlabel("Simulation time [s]", fontsize=14, labelpad=10)
+    plot_axes.set_ylabel("Throughput " + r'$[\mathrm{\frac{customer}{s}}]$', fontsize=14, labelpad=10, rotation=90)
 
     plot_axes.set_xlim([0, 80000])
     plot_axes.set_ylim([0, 0.01])
@@ -72,6 +72,8 @@ def plot_throughput(sampling_time, vectime_list, vecvalue_list, mean_throughput)
 
     plot_axes.plot(sampling_time, mean_throughput, label="Mean", marker="", lw=2, color="black")
 
+    plt.legend(loc="upper right")
+    plt.savefig("Throughput.png", format="png", dpi=1200, bbox_inches='tight')
     plt.draw()
     plt.show(block=True)
 
