@@ -23,7 +23,7 @@ void SeatManager::initialize()
     customerSeated.reserve(par("numberOfSeats"));
 
     // At the beginning, the queue is empty
-    emit(numberOfCustomersTableQueueSignal,0);
+    emit(numberOfCustomersTableQueueSignal, customerQueue.size());
 
     numberOfServedCustomers = 0;
 }
@@ -136,8 +136,8 @@ bool SeatManager::customerQueueIsFull()
     unsigned int maxQueueSize = (unsigned int) par("queueSize").intValue();
 
     if (infiniteCustomerQueueEnabled || (maxQueueSize > 0 && (customerQueue.size() < maxQueueSize)) || (maxQueueSize==0 && !tablesAreFull())) {
-	emit(customerDropRateTableSignal, 0);
-	return false;
+        emit(customerDropRateTableSignal, 0);
+        return false;
     }
 
     emit(customerDropRateTableSignal, 1);
@@ -194,6 +194,6 @@ void SeatManager::handleMessage(cMessage* msg)
 {
     if(msg->isSelfMessage()) // A customer finishes and leaves his spot
         handleLeavingCustomer(msg);
-    else					 // A customer requests a spot
+    else // A customer requests a spot
         handleArrivingCustomer(msg);
 }
