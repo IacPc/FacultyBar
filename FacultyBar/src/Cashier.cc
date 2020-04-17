@@ -129,26 +129,26 @@ bool Cashier::customerQueueIsFull(OrderMessage* newOrder)
     unsigned int maxVipQueueSize = (unsigned int) par("vipQueueSize").intValue();
     unsigned int maxNormalQueueSize = (unsigned int) par("normalQueueSize").intValue();
 
-    bool fullQueue = false;
-    bool vipCustomer = newOrder->getVipPriority();
-    int numberOfLostCustomers = 0;
-
-    if (vipCustomer) {
-        if (!infiniteVipCustomerQueueEnabled && (maxVipQueueSize == vipCustomerQueue.size())) {
-            fullQueue = true;
-            numberOfLostCustomers = 1;
+    if (newOrder->getVipPriority()) {
+	if (infiniteVipCustomerQueueEnabled ||  ( maxVipQueueSize > 0 && (vipCustomerQueue.size() < maxVipQueueSize))  || (maxVipQueueSize==0 && !busy)  ) {
+           emitDropRate(0, true);
+           return false;
+	}else{
             EV << "A VIP order has been dropped. The VIP customer queue is full." << endl;
+	    emitDropRate(1, true);
+	    return true;
         }
-    } else {
-        if (!infiniteNormalCustomerQueueEnabled && (maxNormalQueueSize == normalCustomerQueue.size())) {
-            fullQueue = true;
-            numberOfLostCustomers = 1;
+    }else {
+	if (infiniteNormalCustomerQueueEnabled || ( maxNormalQueueSize > 0 && (normalCustomerQueue.size() < maxNormalQueueSize)) || (maxNormalQueueSize==0 && !busy)) {
+	    emitDropRate(0, false);
+	    return false;
+	}else{
             EV << "A normal order has been dropped. The normal customer queue is full." << endl;
-        }
+	    emitDropRate(1, false);
+	    return true;
+	}
     }
 
-    emitDropRate(numberOfLostCustomers, vipCustomer);
-    return fullQueue;
 }
 
 double Cashier::generateServiceTime()
