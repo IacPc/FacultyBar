@@ -44,14 +44,9 @@ def compute_p0(u, utilization, node_capacity, number_of_seats):
         factorial_sum.append(temp_sum)
 
     second_term = []
-    if u == 1:
-        for index, n_seats in enumerate(number_of_seats):
-            work = ((1-((1/n_seats)**(node_capacity[index]-n_seats+1)))/(1-1/n_seats))*(1/math.factorial(n_seats))
-            second_term.append(work)
-    else:
-        for index, n_seats in enumerate(number_of_seats):
-            work = ((1-(utilization[index]**(node_capacity[index]-n_seats+1)))/(1-utilization[index]))*((u**n_seats)/math.factorial(n_seats))
-            second_term.append(work)
+    for index, n_seats in enumerate(number_of_seats):
+        work = ((1-(utilization[index]**(node_capacity[index]-n_seats+1)))/(1-utilization[index]))*((u**n_seats)/math.factorial(n_seats))
+        second_term.append(work)
 
     denominator = np.array(factorial_sum) + np.array(second_term)
 
