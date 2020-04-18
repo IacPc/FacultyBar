@@ -126,8 +126,10 @@ class StatisticDataFrame:
         CI_upper_obs_number = math.ceil(obs_number*quantile_number + standard_normal_quantile*math.sqrt(obs_number*quantile_number*(1-quantile_number))) + 1
 
         sample_quantile = np.quantile(obs_vector, quantile_number)
-        CI_lower_bound = ordered_statistics[CI_lower_obs_number + 1]
-        CI_upper_bound = ordered_statistics[CI_upper_obs_number + 1]
+        # The confidence interval formula gives two indexes in the range 1..N,
+        # while the arrays have indexes in the range 0..N-1.
+        CI_lower_bound = ordered_statistics[CI_lower_obs_number - 1]
+        CI_upper_bound = ordered_statistics[CI_upper_obs_number - 1]
 
         return sample_quantile, sample_quantile-CI_lower_bound, CI_upper_bound-sample_quantile
 
