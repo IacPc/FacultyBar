@@ -70,7 +70,8 @@ def plot_partial_variance(partial_variance, label):
 def main():
     csv_name = "./ResponseWaiting100d.csv"
     statistic_list = ["waitingTimeVipCustomerCashierQueueStatistic", "responseTimeVipCustomerCashierNodeStatistic",
-                      "waitingTimeNormalCustomerCashierQueueStatistic", "responseTimeNormalCustomerCashierNodeStatistic"]
+                      "waitingTimeNormalCustomerCashierQueueStatistic", "responseTimeNormalCustomerCashierNodeStatistic",
+                      "numberOfVipCustomersCashierQueueStatistic", "numberOfNormalCustomersCashierQueueStatistic"]
     cashier_level = ["1min", "1.5min", "2min", "2.5min"]
     statistic_name = statistic_list[0]
     cashier_time = cashier_level[0]
