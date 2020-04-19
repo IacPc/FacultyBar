@@ -86,7 +86,7 @@ def main():
     #ECDF_no_error = dataframe.get_ECDF_data(statistic_list, cashier_level, confidence_level=None)
     #Lorenz_data = dataframe.get_Lorenz_Curve_data(statistic_list, cashier_level)
     #histogram_data = dataframe.get_histogram_data(statistic_list, cashier_level, number_bins=200)
-    #qq_data = dataframe.get_qq_plot_data(statistic_list, cashier_level, theoretical_distribution="weibull", weibull_shape=2)
+    #qq_data = dataframe.get_qq_plot_data(statistic_list, cashier_level, theoretical_distribution="weibull", weibull_shape=0.8)
     #sample_mean = dataframe.get_sample_mean(statistic_list, cashier_level, confidence_level)
     #sample_median = dataframe.get_sample_median(statistic_list, cashier_level, confidence_level)
     #sample_CoV = dataframe.get_sample_coefficient_of_variation(statistic_list, cashier_level)
@@ -103,10 +103,10 @@ def main():
     """
 
     """
-    plot_statistic("waitingTimeVipCustomerCashierQueueStatistic", ECDF_data, plot_profile="ecdf", x_axis_name="Waiting time VIP customer [s]", y_axis_name="Probability")
-    plot_statistic("responseTimeVipCustomerCashierNodeStatistic", ECDF_data, plot_profile="ecdf", x_axis_name="Response time VIP customer [s]", y_axis_name="Probability")
-    plot_statistic("waitingTimeNormalCustomerCashierQueueStatistic", ECDF_data, plot_profile="ecdf", x_axis_name="Waiting time normal customer [s]", y_axis_name="Probability")
-    plot_statistic("responseTimeNormalCustomerCashierNodeStatistic", ECDF_data, plot_profile="ecdf", x_axis_name="Response time normal customer [s]", y_axis_name="Probability")
+    plot_statistic("waitingTimeVipCustomerCashierQueueStatistic", ECDF_data, plot_profile="ecdf", x_axis_name=r'$W^{VIP}_{CASHIER} [min]$', y_axis_name="Probability")
+    plot_statistic("responseTimeVipCustomerCashierNodeStatistic", ECDF_data, plot_profile="ecdf", x_axis_name=r'$R^{VIP}_{CASHIER} [min]$', y_axis_name="Probability")
+    plot_statistic("waitingTimeNormalCustomerCashierQueueStatistic", ECDF_data, plot_profile="ecdf", x_axis_name=r'$W^{NORMAL}_{CASHIER} [min]$', y_axis_name="Probability")
+    plot_statistic("responseTimeNormalCustomerCashierNodeStatistic", ECDF_data, plot_profile="ecdf", x_axis_name=r'$R^{NORMAL}_{CASHIER} [min]$', y_axis_name="Probability")
     """
 
     """
@@ -131,17 +131,10 @@ def main():
     """
 
     """
-    plot_qq("waitingTimeVipCustomerCashierQueueStatistic", qq_data, y_axis_name="Waiting time VIP customer", x_axis_name="Exponential quantiles")
-    plot_qq("responseTimeVipCustomerCashierNodeStatistic", qq_data, y_axis_name="Response time VIP customer [s]", x_axis_name="Exponential quantiles")
-    plot_qq("waitingTimeNormalCustomerCashierQueueStatistic", qq_data, y_axis_name="Waiting time normal customer [s]", x_axis_name="Exponential quantiles")
-    plot_qq("responseTimeNormalCustomerCashierNodeStatistic", qq_data, y_axis_name="Response time normal customer [s]", x_axis_name="Exponential quantiles")
-    """
-
-    """
-    plot_qq("waitingTimeVipCustomerCashierQueueStatistic", qq_data, y_axis_name="Waiting time VIP customer", x_axis_name="Weibull quantiles")
-    plot_qq("responseTimeVipCustomerCashierNodeStatistic", qq_data, y_axis_name="Response time VIP customer [s]", x_axis_name="Weibull quantiles")
-    plot_qq("waitingTimeNormalCustomerCashierQueueStatistic", qq_data, y_axis_name="Waiting time normal customer [s]", x_axis_name="Weibull quantiles")
-    plot_qq("responseTimeNormalCustomerCashierNodeStatistic", qq_data, y_axis_name="Response time normal customer [s]", x_axis_name="Weibull quantiles")
+    plot_qq("waitingTimeVipCustomerCashierQueueStatistic", qq_data, y_axis_name=r'$W^{VIP}_{CASHIER} [s]', x_axis_name="Weibull quantiles")
+    plot_qq("responseTimeVipCustomerCashierNodeStatistic", qq_data, y_axis_name=r'$R^{VIP}_{CASHIER} [s]$', x_axis_name="Weibull quantiles (k = 1.15)")
+    plot_qq("waitingTimeNormalCustomerCashierQueueStatistic", qq_data, y_axis_name=r'$W^{NORMAL}_{CASHIER} [s]', x_axis_name="Weibull quantiles")
+    plot_qq("responseTimeNormalCustomerCashierNodeStatistic", qq_data, y_axis_name=r'$R^{NORMAL}_{CASHIER} [s]$', x_axis_name="Weibull quantiles (k = 0.95)")
     """
 
 if __name__ == "__main__":

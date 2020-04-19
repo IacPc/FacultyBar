@@ -1,3 +1,4 @@
+import matplotlib.ticker as ticker
 import matplotlib.pyplot as plt
 import configparser as cp
 import numpy as np
@@ -10,20 +11,25 @@ class PlotBuilder:
         self.config.read("settings.ini")
         plt.style.use(self.config["Plot_Profile"]["matplotlib_style"])
 
-        self.figure = plt.figure()
+        self.figure = plt.figure(figsize=(13.66, 7.68))
         self.plot_axes = plt.gca()
         self.plot_profile = json.loads(self.config.get("Plot_Profile", plot_profile))
+        plt.margins(0)
 
         if self.plot_profile["name"] == "LORENZ":
             self.__add_Lorenz_reference_lines()
 
 
     def set_axes_label(self, x_axis_name, y_axis_name):
-        self.plot_axes.set_xlabel(x_axis_name, fontsize=12, labelpad=10)
-        self.plot_axes.set_ylabel(y_axis_name, fontsize=12, labelpad=10, rotation=90)
+        self.plot_axes.set_xlabel(x_axis_name, fontsize=14, labelpad=10)
+        self.plot_axes.set_ylabel(y_axis_name, fontsize=14, labelpad=10, rotation=90)
 
     def add_plot_line(self, label, x_axis_value, y_axis_value=None, x_error_bar=None, num_bins=None, regression_x=None, regression_y=None, color='r'):
         if self.plot_profile["name"] == "ECDF":
+            # Conversion to minutes
+            x_axis_value = (np.array(x_axis_value))/60
+            x_error_bar = (np.array(x_error_bar))/60
+
             self.plot_axes.errorbar(x_axis_value, y_axis_value, xerr=x_error_bar,
                                     label=label, color=color, marker=self.plot_profile["marker"],
                                     lw=self.plot_profile["line_width"], elinewidth=self.plot_profile["error_line_width"],
@@ -56,12 +62,12 @@ class PlotBuilder:
         self.plot_axes.plot(np.array([1, 1]), np.array([0, 1]), lw=self.plot_profile["line_width"], color="black")
 
     def to_image(self, directory, file_name, image_format):
-        plt.legend(loc=self.plot_profile["legend_position"])
+        plt.legend(loc=self.plot_profile["legend_position"], prop={'size': 14})
         export_name = directory + file_name + "." + image_format
         plt.savefig(export_name, format=image_format, dpi=1200, bbox_inches='tight')
 
     def draw(self):
-        plt.legend(loc=self.plot_profile["legend_position"])
+        plt.legend(loc=self.plot_profile["legend_position"], prop={'size': 14})
         plt.draw()
         plt.show(block=True)
 
