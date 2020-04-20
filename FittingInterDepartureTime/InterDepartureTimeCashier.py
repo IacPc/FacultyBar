@@ -81,11 +81,11 @@ def compute_coefficient_of_variation(obs_vector):
 
 
 def plot_qq(theor_quant, ordered_stats, regr_x, regr_y, regr_equation):
-    figure = plt.figure()
+    figure = plt.figure(figsize=(13.66, 7.68))
     plot_axes = plt.gca()
 
-    plot_axes.set_xlabel("Exponential quantile", fontsize=12, labelpad=10)
-    plot_axes.set_ylabel("Interdeparture time", fontsize=12, labelpad=10, rotation=90)
+    plot_axes.set_xlabel("Exponential quantile", fontsize=14, labelpad=10)
+    plot_axes.set_ylabel("Inter-departure time [s]", fontsize=14, labelpad=10, rotation=90)
 
     # QQ points
     plot_axes.plot(theor_quant, ordered_stats, marker="o", lw=0, color="cornflowerblue")
@@ -93,7 +93,8 @@ def plot_qq(theor_quant, ordered_stats, regr_x, regr_y, regr_equation):
     # Regression line
     plot_axes.plot(regr_x, regr_y, linestyle="--", linewidth=1, label=regr_equation, color="black")
 
-    plt.legend(loc="upper left")
+    plt.legend(loc="upper left", prop={'size': 14})
+    plt.savefig("Fittinginter-departure times.png", format="png", dpi=1200, bbox_inches='tight')
     plt.draw()
     plt.show(block=True)
 
