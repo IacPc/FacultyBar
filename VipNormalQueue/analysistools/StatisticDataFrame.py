@@ -296,7 +296,7 @@ class StatisticDataFrame:
     1) x_vector contains all the observations (across repetitions) gathered with the associated customer time; 
     2) number_of_bins is the number of buckets to be used in the histogram plot; it is the same passed as argument.
     '''
-    def get_histogram_data(self, cashier_level, customer_level, number_bins):
+    def get_histogram_data(self, cashier_level, customer_level, bins):
         histogram_dict = dict()
 
         for cashier_time in cashier_level:
@@ -308,7 +308,7 @@ class StatisticDataFrame:
 
                 customer_category = "VIP" if self.customer_category == "VOP" else "NORMAL"
                 customer_label = r'$T_{' + customer_category + '} = ' + customer_time + '$'
-                hist_data.append((customer_label, obs_vector, number_bins))
+                hist_data.append((customer_label, obs_vector, bins))
 
             cashier_label = r'$T_{CASHIER} = ' + cashier_time + '$'
             histogram_dict[cashier_label] = hist_data

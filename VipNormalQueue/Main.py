@@ -64,7 +64,7 @@ def plot_histogram(plot_data, x_axis_name="", y_axis_name=""):
             x_axis_full_name = x_axis_name + " (" + cashier_time + ")"
             plot.set_axes_label(x_axis_full_name, y_axis_name)
 
-            plot.add_plot_line(hist_tuple[0], hist_tuple[1], num_bins=hist_tuple[2], color=color_list[color_index])
+            plot.add_plot_line(hist_tuple[0], hist_tuple[1], bins=hist_tuple[2], color=color_list[color_index])
             color_index = color_index+1
 
             if config["General"].getboolean("save_to_file"):
@@ -113,13 +113,13 @@ def main():
     #sample_mean_vip = dataframe_vip.get_sample_mean(cashier_level, vip_customer_level, confidence_level)
     #sample_IoD_vip = dataframe_vip.get_index_of_dispersion(cashier_level, vip_customer_level)
     sample_quantile_vip = dataframe_vip.get_sample_quantile(cashier_level, vip_customer_level, quantile_number=0.99, confidence_level=confidence_level)
-    #histogram_data_vip = dataframe_vip.get_histogram_data(cashier_level, vip_customer_level, number_bins=100)
+    #histogram_data_vip = dataframe_vip.get_histogram_data(cashier_level, vip_customer_level, bins=np.arange(0, 50))
     #qq_data_vip = dataframe_vip.get_qq_plot_data(cashier_level, vip_customer_level, theoretical_distribution="weibull", discrete_weibull_shape=3)
 
     #sample_mean_normal = dataframe_normal.get_sample_mean(cashier_level, normal_customer_level, confidence_level)
     #sample_IoD_normal = dataframe_normal.get_index_of_dispersion(cashier_level, normal_customer_level)
-    sample_quantile_normal = dataframe_normal.get_sample_quantile(cashier_level, normal_customer_level, quantile_number=0.99, confidence_level=confidence_level)
-    #histogram_data_normal = dataframe_normal.get_histogram_data(cashier_level, normal_customer_level, number_bins=100)
+    sample_quantile_normal = dataframe_normal.get_sample_quantile(cashier_level, normal_customer_level, quantile_number=0.95, confidence_level=confidence_level)
+    #histogram_data_normal = dataframe_normal.get_histogram_data(cashier_level, normal_customer_level,np.arange(0, 50))
     #qq_data_normal = dataframe_normal.get_qq_plot_data(cashier_level, normal_customer_level, theoretical_distribution="weibull", discrete_weibull_shape=3)
 
     print("Data analysis completed")
@@ -131,27 +131,27 @@ def main():
     #pprint(sample_mean_normal)
     #pprint(sample_IoD_vip)
     #pprint(sample_IoD_normal)
-    #pprint(sample_quantile_vip)
-    #pprint(sample_quantile_normal)
+    pprint(sample_quantile_vip)
+    pprint(sample_quantile_normal)
 
-    #"""
+    """
     plot_vip = PlotBuilder(plot_profile="comparison")
-    plot_vip.set_axes_label('$T_{CASHIER} [min]$', "Number of customers in queue")
+    plot_vip.set_axes_label('$T_{CASHIER} [min]$', r'$N^{VIP}_{q,CASHIER}$')
     plot_data_comparison(plot_vip, sample_quantile_vip, marker='^', color_list=["crimson", "darkorange", "cornflowerblue"])
     plot_data_comparison(plot_vip, sample_quantile_normal, marker='s', color_list=["lightgrey", "lightgrey", "lightgrey"])
-    plot_vip.draw()
-    #"""
+    plot_vip.to_image(directory=config["General"]["export_directory"], file_name="Queue VIP" + "_" + str(time()), image_format="png")
+    """
 
-    #"""
+    """
     plot_normal = PlotBuilder(plot_profile="comparison")
-    plot_normal.set_axes_label('$T_{CASHIER} [min]$', "Number of customers in queue")
+    plot_normal.set_axes_label('$T_{CASHIER} [min]$', r'$N^{NORMAL}_{q,CASHIER}$')
     plot_data_comparison(plot_normal, sample_quantile_vip, marker='^', color_list=["lightgrey", "lightgrey", "lightgrey"])
     plot_data_comparison(plot_normal, sample_quantile_normal, marker='s', color_list=["crimson", "darkorange", "cornflowerblue"])
-    plot_normal.draw()
-    #"""
+    plot_normal.to_image(directory=config["General"]["export_directory"], file_name="Queue normal" + "_" + str(time()), image_format="png")
+    """
 
-    #plot_histogram(histogram_data_vip, x_axis_name="Number of VIP customers in queue", y_axis_name="Frequency")
-    #plot_histogram(histogram_data_normal, x_axis_name="Number of normal customers", y_axis_name="Frequency")
+    #plot_histogram(histogram_data_vip, x_axis_name=r'$N^{VIP}_{q,CASHIER}$', y_axis_name="Frequency")
+    #plot_histogram(histogram_data_normal, x_axis_name=r'$N^{NORMAL}_{q,CASHIER}$', y_axis_name="Frequency")
 
     #plot_qq(qq_data_vip, y_axis_name="Number of VIP customers", x_axis_name="Theoretical quantiles")
     #plot_qq(qq_data_normal, y_axis_name="Number of normal customers", x_axis_name="Theoretical quantiles")
