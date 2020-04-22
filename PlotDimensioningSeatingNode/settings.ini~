@@ -1,0 +1,14 @@
+[Customer]
+# They must be expressed in minutes
+vip_interarrival_time = 5.5
+normal_interarrival_time = 5.5
+eating_time = 15
+
+[SeatingNode]
+number_of_seats = 5
+data_length=40
+
+[Plot_Profile]
+matplotlib_style = default
+color_list = ["r", "b"]
+qq = {"name": "LINES", "marker": "o", "linestyle": "--", "line_width": 1, "regression_color": "black", "legend_position": "upper right"}
