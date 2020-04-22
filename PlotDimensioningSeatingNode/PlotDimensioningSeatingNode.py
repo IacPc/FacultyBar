@@ -3,6 +3,7 @@ import numpy as np
 import json
 import mpmath as math
 import matplotlib.pyplot as plt
+import texttable as tt
 from matplotlib.ticker import FormatStrFormatter
 
 
@@ -105,8 +106,26 @@ def main():
     number_of_seats_with_queue = np.full(fill_value=number_of_seats, shape=data_length)
     node_capacity_with_queue = np.add(queue_size_not_null, number_of_seats_with_queue)
     loss_probability_with_queue = compute_loss_probability(u, utilization, node_capacity_with_queue, number_of_seats_with_queue)
-    plot_loss_probability(loss_probability_No_Queueing, loss_probability_with_queue)
-   
+    # plot_loss_probability(loss_probability_No_Queueing, loss_probability_with_queue)
+    
+    result_table_more_seats = tt.Texttable()
+    result_table_more_seats.header(["Node capacity", "Number of seats", "Queue capacity", "Loss probability"])
+    result_table_more_seats.set_cols_dtype(["t", "t", "t", "t"])
+
+    for row in zip(node_capacity_no_queue, node_capacity_no_queue, np.full(fill_value=0, shape=len(node_capacity_no_queue)), loss_probability_No_Queueing):
+        result_table_more_seats.add_row(row)
+    print("************* INCREASING NUMBER OF SEATS *************")
+    print(result_table_more_seats.draw())
+
+    result_table_more_queue = tt.Texttable()
+    result_table_more_queue.header(["Node capacity", "Number of seats", "Queue capacity", "Loss probability"])
+    result_table_more_queue.set_cols_dtype(["t", "t", "t", "t"])
+    for row in zip(node_capacity_with_queue, number_of_seats_with_queue, node_capacity_with_queue, loss_probability_with_queue):
+        result_table_more_queue.add_row(row)
+
+    print("************* INCREASING QUEUE LENGTH *************")
+    print(result_table_more_queue.draw())
+
 
 if __name__ == "__main__":
     main()
