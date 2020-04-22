@@ -84,21 +84,6 @@ def compute_loss_probability(u, utilization, node_capacity, number_of_seats):
     return loss_probability
 
 
-def plot_loss_probability(loss_probability_No_Queueing,loss_probability_with_queue):
-    plot_axes = plt.gca()
-    plot_axes.set_ylabel("Loss Probability", fontsize=14, labelpad=10, rotation=90)
-    plot_axes.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
-
-    x_values = np.arange(start=0, stop=len(loss_probability_No_Queueing), step=1.0)
-
-    plot_axes.plot(x_values, loss_probability_No_Queueing, marker="", lw=2, label="More Seat")
-    plot_axes.plot(x_values, loss_probability_with_queue, marker="", lw=2, label="More Queue")
-
-    plt.legend(loc="upper right", prop={'size': 14})
-    plt.draw()
-    plt.show(block=True)
-
-
 def main():
     u, utilization, node_capacity, number_of_seats, queue_size = load_parameters()
     loss_probability = compute_loss_probability(u, utilization, node_capacity, number_of_seats)
