@@ -27,10 +27,6 @@ def load_parameters():
     utilization = np.full(fill_value=u, shape=len(number_of_seats)) / number_of_seats  # utilization in list form
     node_capacity = number_of_seats + queue_size  # scalar
 
-    if len(utilization[utilization >= 1]) > 0:
-        print("ERROR: One utilization is higher than one")
-        exit()
-
     return u, utilization, node_capacity, number_of_seats, queue_size
 
 
@@ -89,10 +85,10 @@ def main():
     loss_probability = compute_loss_probability(u, utilization, node_capacity, number_of_seats)
 
     result_table = tt.Texttable()
-    result_table.header(["Node capacity", "Number of seats", "Queue capacity", "Loss probability"])
-    result_table.set_cols_dtype(["t", "t", "t", "t"])
+    result_table.header(["Utilization", "Node capacity", "Number of seats", "Queue capacity", "Loss probability"])
+    result_table.set_cols_dtype(["t", "t", "t", "t", "t"])
 
-    for row in zip(node_capacity, number_of_seats, queue_size, loss_probability):
+    for row in zip(utilization, node_capacity, number_of_seats, queue_size, loss_probability):
         result_table.add_row(row)
 
     print(result_table.draw())
