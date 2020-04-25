@@ -135,7 +135,7 @@ bool SeatManager::customerQueueIsFull()
     bool infiniteCustomerQueueEnabled = par("infiniteCustomerQueue").boolValue();
     unsigned int maxQueueSize = (unsigned int) par("queueSize").intValue();
 
-    if (infiniteCustomerQueueEnabled || (maxQueueSize > 0 && (customerQueue.size() < maxQueueSize)) || (maxQueueSize==0 && !tablesAreFull())) {
+    if (infiniteCustomerQueueEnabled || (maxQueueSize > 0 && (customerQueue.size() < maxQueueSize)) || (maxQueueSize == 0 && !tablesAreFull())) {
         emit(customerDropRateTableSignal, 0);
         return false;
     }
