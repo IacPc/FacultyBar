@@ -97,6 +97,8 @@ def plot_loss_probability(loss_probability_No_Queueing, loss_probability_with_qu
 
     plt.margins(0)
     plt.legend(loc="upper right", prop={'size': 14})
+
+    plt.savefig("DimensioningSeatingNode.png", format="png", dpi=300, bbox_inches='tight')
     plt.draw()
     plt.show(block=True)
 
