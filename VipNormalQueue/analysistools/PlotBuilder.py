@@ -54,7 +54,7 @@ class PlotBuilder:
 
         plt.legend(loc=self.plot_profile["legend_position"], prop={'size': 14})
         export_name = directory + file_name + "." + image_format
-        plt.savefig(export_name, format=image_format, dpi=1200, bbox_inches='tight')
+        plt.savefig(export_name, format=image_format, dpi=300, bbox_inches='tight')
 
     def draw(self):
         if self.plot_profile["name"] == "COMPARISON":

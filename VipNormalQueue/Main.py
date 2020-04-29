@@ -112,7 +112,7 @@ def main():
 
     #sample_mean_vip = dataframe_vip.get_sample_mean(cashier_level, vip_customer_level, confidence_level)
     #sample_IoD_vip = dataframe_vip.get_index_of_dispersion(cashier_level, vip_customer_level)
-    sample_quantile_vip = dataframe_vip.get_sample_quantile(cashier_level, vip_customer_level, quantile_number=0.99, confidence_level=confidence_level)
+    sample_quantile_vip = dataframe_vip.get_sample_quantile(cashier_level, vip_customer_level, quantile_number=0.95, confidence_level=confidence_level)
     #histogram_data_vip = dataframe_vip.get_histogram_data(cashier_level, vip_customer_level, bins=np.arange(0, 50))
     #qq_data_vip = dataframe_vip.get_qq_plot_data(cashier_level, vip_customer_level, theoretical_distribution="weibull", discrete_weibull_shape=3)
 
@@ -131,12 +131,12 @@ def main():
     #pprint(sample_mean_normal)
     #pprint(sample_IoD_vip)
     #pprint(sample_IoD_normal)
-    pprint(sample_quantile_vip)
-    pprint(sample_quantile_normal)
+    #pprint(sample_quantile_vip)
+    #pprint(sample_quantile_normal)
 
     """
     plot_vip = PlotBuilder(plot_profile="comparison")
-    plot_vip.set_axes_label('$T_{CASHIER} [min]$', r'$N^{VIP}_{q,CASHIER}$')
+    plot_vip.set_axes_label('$T_{CASHIER} [min]$', r'$N^{VIP}_{q,CASHIER,0.05}$')
     plot_data_comparison(plot_vip, sample_quantile_vip, marker='^', color_list=["crimson", "darkorange", "cornflowerblue"])
     plot_data_comparison(plot_vip, sample_quantile_normal, marker='s', color_list=["lightgrey", "lightgrey", "lightgrey"])
     plot_vip.to_image(directory=config["General"]["export_directory"], file_name="Queue VIP" + "_" + str(time()), image_format="png")
@@ -144,7 +144,7 @@ def main():
 
     """
     plot_normal = PlotBuilder(plot_profile="comparison")
-    plot_normal.set_axes_label('$T_{CASHIER} [min]$', r'$N^{NORMAL}_{q,CASHIER}$')
+    plot_normal.set_axes_label('$T_{CASHIER} [min]$', r'$N^{NORMAL}_{q,CASHIER,0.05}$')
     plot_data_comparison(plot_normal, sample_quantile_vip, marker='^', color_list=["lightgrey", "lightgrey", "lightgrey"])
     plot_data_comparison(plot_normal, sample_quantile_normal, marker='s', color_list=["crimson", "darkorange", "cornflowerblue"])
     plot_normal.to_image(directory=config["General"]["export_directory"], file_name="Queue normal" + "_" + str(time()), image_format="png")
