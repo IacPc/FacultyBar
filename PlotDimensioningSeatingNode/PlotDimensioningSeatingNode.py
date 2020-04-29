@@ -86,7 +86,7 @@ def plot_loss_probability(loss_probability_No_Queueing, loss_probability_with_qu
     x_values = np.arange(start=6, stop=len(loss_probability_No_Queueing)+6, step=1.0)
 
     plot_axes.plot(x_values, loss_probability_No_Queueing, marker="", lw=2, color="cornflowerblue", label="Increasing only " + r'$N_{SEAT}$')
-    plot_axes.plot(x_values, loss_probability_with_queue, marker="", lw=2, color="darkorange", label="Increasing only " + r'$N_{q, SEATING}$')
+    plot_axes.plot(x_values, loss_probability_with_queue, marker="", lw=2, color="darkorange", label="Increasing only " + r'$K_{q, SEATING}$')
     plot_axes.plot(np.arange(start=0, stop=50), np.full(fill_value=0.01, shape=50), marker="", lw=1, linestyle="--", color="black", label=r'$p_{LOSS}=1$%')
 
     plot_axes.set_xlim([6, 30])
