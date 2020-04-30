@@ -111,6 +111,7 @@ def main():
 
     sample_mean, error = compute_sample_mean(obs_vector, confidence_level=0.99)
 
+    print("Number of observations: " + str(len(obs_vector)))
     print("Coefficient of variation: " + str(compute_coefficient_of_variation(obs_vector)))
     print("Sample mean: " + str(sample_mean) + "\n" + "Error: " + str(error))
 
