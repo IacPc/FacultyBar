@@ -94,7 +94,7 @@ def plot_qq(theor_quant, ordered_stats, regr_x, regr_y, regr_equation):
     plot_axes.plot(regr_x, regr_y, linestyle="--", linewidth=1, label=regr_equation, color="black")
 
     plt.legend(loc="upper left", prop={'size': 14})
-    plt.savefig("Fittinginter-departure times.png", format="png", dpi=1200, bbox_inches='tight')
+    plt.savefig("Fittinginter-departure times.png", format="png", dpi=300, bbox_inches='tight')
     plt.draw()
     plt.show(block=True)
 

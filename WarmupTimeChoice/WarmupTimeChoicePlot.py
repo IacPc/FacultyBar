@@ -73,7 +73,7 @@ def plot_throughput(sampling_time, vectime_list, vecvalue_list, mean_throughput)
     plot_axes.plot(sampling_time, mean_throughput, label="Mean", marker="", lw=2, color="black")
 
     plt.legend(loc="upper right", prop={'size': 14})
-    plt.savefig("Throughput.png", format="png", dpi=1200, bbox_inches='tight')
+    plt.savefig("Throughput.png", format="png", dpi=300, bbox_inches='tight')
     plt.draw()
     plt.show(block=True)
 
