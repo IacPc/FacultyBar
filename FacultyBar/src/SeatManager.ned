@@ -5,6 +5,7 @@ package facultybar;
 simple SeatManager
 {
 	parameters:
+	    int rngNumber = default(0);
 		bool constantEatingDistribution = default(false);
 		bool exponentialEatingDistribution = default(false);
 		double constantEatingMean @unit(s) = default(0s);

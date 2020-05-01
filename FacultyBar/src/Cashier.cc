@@ -177,7 +177,7 @@ double Cashier::generateServiceTime()
     if (par("constantServiceDistribution").boolValue()) {
         serviceTime = par("constantServiceMean").doubleValue();
     } else if (par("exponentialServiceDistribution").boolValue()) {
-        serviceTime = exponential(par("exponentialServiceMean").doubleValue(), 2);
+        serviceTime = exponential(par("exponentialServiceMean").doubleValue(), par("rngNumber").intValue());
     }
 
     EV << "A new order went under service. Service time: " << serviceTime << endl;

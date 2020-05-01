@@ -5,6 +5,7 @@ package facultybar;
 simple Cashier
 {
     parameters:
+        int rngNumber = default(0);
         bool constantServiceDistribution = default(false);
         bool exponentialServiceDistribution = default(false);
         double constantServiceMean @unit(s) = default(0s);

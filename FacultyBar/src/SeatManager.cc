@@ -62,7 +62,7 @@ double SeatManager::assignEatingTime()
     double eatingTime;
 
     if (par("exponentialEatingDistribution").boolValue())
-        eatingTime = exponential(par("exponentialEatingMean").doubleValue(), 3);
+        eatingTime = exponential(par("exponentialEatingMean").doubleValue(), par("rngNumber").intValue());
     else if (par("constantEatingDistribution").boolValue())
         eatingTime = par("constantEatingMean").doubleValue();
 
