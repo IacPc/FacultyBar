@@ -4,16 +4,22 @@
 
 Define_Module(OrderProducer);
 
+// Constructor.
 OrderProducer::OrderProducer()
 {
     timerMessage = NULL;
 }
 
+// Destructor.
 OrderProducer::~OrderProducer()
 {
     cancelAndDelete(timerMessage);
 }
 
+// Checks if the simulation parameters in the configuration file are valid, namely:
+//  1) if a distribution for the production of the messages has been set uniquely;
+//  2) if the mean value of the constant/exponential distribution is not negative.
+// If the parameters are not valid, a runtime exception is thrown.
 void OrderProducer::checkParametersValidity()
 {
     bool constantDistributionEnabled = par("constantProductionDistribution").boolValue();
@@ -38,6 +44,7 @@ void OrderProducer::checkParametersValidity()
     }
 }
 
+// Generates the production time for the next order, according to the configured distribution.
 double OrderProducer::generateProductionTime()
 {
     double productionTime = 0;
@@ -52,15 +59,16 @@ double OrderProducer::generateProductionTime()
     return productionTime;
 }
 
+// Sends a produced order through the "out" gate and triggers the next production cycle.
 void OrderProducer::sendNewOrder()
 {
     OrderMessage* newOrder = new OrderMessage("orderMessage");
     newOrder->setVipPriority(par("vipPriority").boolValue());
 
     if (!newOrder->getVipPriority()) {
-        // Normal customers will have lower FES scheduling priority, such that
-        // if a normal customer arrives at the cashier at the same simulation time of a VIP customer,
-        // the VIP one will always be served before.
+        // Normal customers must have lower FES scheduling priority, so that if
+        // a normal customer arrives at the cashier at the same simulation time
+        // of a VIP customer, the VIP is always served before.
         newOrder->setSchedulingPriority(1);
     }
 
@@ -70,6 +78,8 @@ void OrderProducer::sendNewOrder()
     scheduleAt(simTime() + generateProductionTime(), timerMessage);
 }
 
+// Initialization method: if the simulation parameters are valid,
+// the method triggers the first production of an order.
 void OrderProducer::initialize()
 {
     checkParametersValidity();
@@ -78,6 +88,7 @@ void OrderProducer::initialize()
     scheduleAt(simTime() + generateProductionTime(), timerMessage);
 }
 
+// Main handler.
 void OrderProducer::handleMessage(cMessage* msg)
 {
     if (msg->isSelfMessage()) {

@@ -3,12 +3,15 @@
 
 Define_Module(Cashier);
 
+// Constructor.
 Cashier::Cashier()
 {
     timerMessage = NULL;
     orderUnderService = NULL;
 }
 
+// Destructor: it frees the allocated memory for
+// the order under service and the orders in both queues.
 Cashier::~Cashier()
 {
     cancelAndDelete(timerMessage);
@@ -31,6 +34,11 @@ Cashier::~Cashier()
     }
 }
 
+// Checks if the simulation parameters in the configuration file are valid, namely:
+//  1) if a distribution for the service time has been set uniquely;
+//  2) if the mean value of the constant/exponential distribution is not negative;
+//  3) if the size of both queues, when finite, is >= 0.
+// If the parameters are not valid, a runtime exception is thrown.
 void Cashier::checkParametersValidity()
 {
     bool constantDistributionEnabled = par("constantServiceDistribution").boolValue();
@@ -69,6 +77,7 @@ void Cashier::checkParametersValidity()
     }
 }
 
+// Registers the statistic signals.
 void Cashier::initializeStatisticSignals()
 {
     waitingTimeNormalCustomerCashierQueueSignal = registerSignal("waitingTimeNormalCustomerCashierQueue");
@@ -82,6 +91,8 @@ void Cashier::initializeStatisticSignals()
     interDepartureTimeCashierSignal = registerSignal("interDepartureTimeCashier");
 }
 
+// Given an order, the method computes the waiting time of the customer and
+// emits it according to the associated priority.
 void Cashier::emitWaitingTime(OrderMessage* customerOrder)
 {
     simtime_t waitingTime = customerOrder->getCashierQueueExitTime() - customerOrder->getCashierQueueArrivalTime();
@@ -93,6 +104,8 @@ void Cashier::emitWaitingTime(OrderMessage* customerOrder)
     }
 }
 
+// Given an order, the method computes the response time of the customer and
+// emits it according to the associated priority.
 void Cashier::emitResponseTime(OrderMessage* customerOrder)
 {
     simtime_t responseTime = customerOrder->getCashierNodeDepartureTime() - customerOrder->getCashierQueueArrivalTime();
@@ -104,6 +117,8 @@ void Cashier::emitResponseTime(OrderMessage* customerOrder)
     }
 }
 
+// Emits the size of a queue, identified by the parameter numberOfCustomers,
+// according to its priority (vipQueue).
 void Cashier::emitCustomerQueueSize(int numberOfCustomers, bool vipQueue)
 {
     if (vipQueue) {
@@ -113,6 +128,7 @@ void Cashier::emitCustomerQueueSize(int numberOfCustomers, bool vipQueue)
     }
 }
 
+// Emits the number of lost customers, according to their priority class.
 void Cashier::emitDropRate(int numberOfLostCustomers, bool vipCustomer)
 {
     if (vipCustomer) {
@@ -122,6 +138,7 @@ void Cashier::emitDropRate(int numberOfLostCustomers, bool vipCustomer)
     }
 }
 
+// Checks if the priority queue related to the arriving customer is full or not.
 bool Cashier::customerQueueIsFull(OrderMessage* newOrder)
 {
     bool infiniteNormalCustomerQueueEnabled = par("infiniteNormalCustomerQueue").boolValue();
@@ -129,6 +146,8 @@ bool Cashier::customerQueueIsFull(OrderMessage* newOrder)
     unsigned int maxVipQueueSize = (unsigned int) par("vipQueueSize").intValue();
     unsigned int maxNormalQueueSize = (unsigned int) par("normalQueueSize").intValue();
 
+    // The size check is more complex to avoid the loss of a customer when the size of a queue is 0, but the cashier is not occupied.
+    // A simple check like "if (!infiniteCustomerQueueEnabled && (maxQueueSize == customerQueue.size()) then Drop" is not sufficient.
     if (newOrder->getVipPriority()) {
         if (infiniteVipCustomerQueueEnabled || (maxVipQueueSize > 0 && (vipCustomerQueue.size() < maxVipQueueSize)) || (maxVipQueueSize == 0 && !busy)) {
             emitDropRate(0, true);
@@ -150,6 +169,7 @@ bool Cashier::customerQueueIsFull(OrderMessage* newOrder)
     }
 }
 
+// Generates the service time for the order that goes under service, according to the configured distribution.
 double Cashier::generateServiceTime()
 {
     double serviceTime = 0;
@@ -164,6 +184,10 @@ double Cashier::generateServiceTime()
     return serviceTime;
 }
 
+// Handles an arriving order, so that:
+//  1) the customer is placed in a queue or dropped, if the queue is full;
+//  2) the order goes under service if the cashier is not occupied;
+//  3) the statistics are correctly recorded.
 void Cashier::handleOrderArrival(cMessage* msg)
 {
     OrderMessage* newOrder = check_and_cast<OrderMessage*>(msg);
@@ -198,6 +222,10 @@ void Cashier::handleOrderArrival(cMessage* msg)
     }
 }
 
+// Handles the completion of an order, so that:
+//  1) the order corresponding to a served customer is sent through the "out" gate;
+//  2) the next customer goes under service, according to the priority policy;
+//  3) the statistics are correctly recorded.
 void Cashier::completeOrder()
 {
     orderUnderService->setCashierNodeDepartureTime(simTime());
@@ -210,14 +238,14 @@ void Cashier::completeOrder()
     EV << "Order completed." << endl;
 
     if (vipCustomerQueue.empty() && normalCustomerQueue.empty()) {
-        // For pure "safety" reason: avoid to delete a message that left the node
+        // For pure "safety" reason: avoid to delete a message that left the node.
         orderUnderService = NULL;
 
         busy = false;
         return;
     }
 
-    // busy is still true here
+    // "busy" is still true here.
     if (!vipCustomerQueue.empty()) {
         orderUnderService = vipCustomerQueue.front();
         vipCustomerQueue.pop();
@@ -234,6 +262,8 @@ void Cashier::completeOrder()
     scheduleAt(simTime() + generateServiceTime(), timerMessage);
 }
 
+// Initialization method: if the simulation parameters are valid, it ensures that
+// the statistic signals are correctly registered and initialized.
 void Cashier::initialize()
 {
     checkParametersValidity();
@@ -243,11 +273,12 @@ void Cashier::initialize()
     busy = false;
     lastDepartureTime = simTime();
 
-    // At the beginning, both queues are empty
+    // At the beginning, both queues are empty.
     emitCustomerQueueSize(normalCustomerQueue.size(), false);
     emitCustomerQueueSize(vipCustomerQueue.size(), true);
 }
 
+// Main handler.
 void Cashier::handleMessage(cMessage* msg)
 {
     if (msg->isSelfMessage()) {

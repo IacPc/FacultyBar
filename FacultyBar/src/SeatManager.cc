@@ -3,6 +3,7 @@
 
 Define_Module(SeatManager);
 
+// Registers the statistic signals.
 void SeatManager::initializeStatisticSignals()
 {
     waitingTimeNormalCustomerTableQueueSignal = registerSignal("waitingTimeNormalCustomerTableQueue");
@@ -14,6 +15,8 @@ void SeatManager::initializeStatisticSignals()
     throughputSignal = registerSignal("throughput");
 }
 
+// Initialization method: if the simulation parameters are valid, it ensures that
+// the statistic signals are correctly registered and initialized.
 void SeatManager::initialize()
 {
     checkParametersValidity();
@@ -22,12 +25,14 @@ void SeatManager::initialize()
     // Reserve space for unordered_set to avoid rehashing when the actual size grows.
     customerSeated.reserve(par("numberOfSeats"));
 
-    // At the beginning, the queue is empty
+    // At the beginning, the queue is empty.
     emit(numberOfCustomersTableQueueSignal, customerQueue.size());
 
     numberOfServedCustomers = 0;
 }
 
+// Destructor: it frees the allocated memory for
+// the customers at the tables and the customers in queue.
 SeatManager::~SeatManager()
 {
     OrderMessage* customerMessage = NULL;
@@ -45,11 +50,13 @@ SeatManager::~SeatManager()
    }
 }
 
+// Checks if there are available seats in the table area.
 bool SeatManager::tablesAreFull()
 {
     return (customerSeated.size() == (unsigned long) par("numberOfSeats").intValue());
 }
 
+// Generates the eating time for the customer that goes under service, according to the configured distribution.
 double SeatManager::assignEatingTime()
 {
     double eatingTime;
@@ -63,6 +70,8 @@ double SeatManager::assignEatingTime()
     return eatingTime;
 }
 
+// Removes and returns the first customer of the queue.
+// Then, the method emits her waiting time and the new size of the queue.
 OrderMessage* SeatManager::removeCustomerFromQueue()
 {
     OrderMessage* nextCustomer = customerQueue.front();
@@ -75,6 +84,12 @@ OrderMessage* SeatManager::removeCustomerFromQueue()
     return nextCustomer;
 }
 
+// Checks if the simulation parameters in the configuration file are valid, namely:
+//  1) if a distribution for the eating time has been set uniquely;
+//  2) if the mean value of the constant/exponential distribution is not negative;
+//  3) if the number of seats is >= 0;
+//  4) if the size of the queue, when finite, is >= 0.
+// If the parameters are not valid, a runtime exception is thrown.
 void SeatManager::checkParametersValidity()
 {
     if (par("constantEatingDistribution").boolValue() == par("exponentialEatingDistribution").boolValue()) {
@@ -108,6 +123,7 @@ void SeatManager::checkParametersValidity()
     }
 }
 
+// Given a customer, the method computes her waiting time and emits it according to the associated priority.
 void SeatManager::emitWaitingTimeSignal(OrderMessage* msg)
 {
     simtime_t exitTime = msg->getSeatManagerQueueExitTime();
@@ -119,6 +135,7 @@ void SeatManager::emitWaitingTimeSignal(OrderMessage* msg)
         emit(waitingTimeNormalCustomerTableQueueSignal, exitTime - arrivalTime);
 }
 
+// Given a customer, the method computes her response time and emits it according to the associated priority.
 void SeatManager::emitResponseTimeSignal(OrderMessage* msg)
 {
     simtime_t departureTime = msg->getSeatManagerNodeDepartureTime();
@@ -130,11 +147,14 @@ void SeatManager::emitResponseTimeSignal(OrderMessage* msg)
         emit(responseTimeNormalCustomerTableNodeSignal, departureTime - arrivalTime);
 }
 
+// Checks if the priority queue related to the arriving customer is full or not.
 bool SeatManager::customerQueueIsFull()
 {
     bool infiniteCustomerQueueEnabled = par("infiniteCustomerQueue").boolValue();
     unsigned int maxQueueSize = (unsigned int) par("queueSize").intValue();
 
+    // The size check is more complex to avoid the loss of a customer when the size of the queue is 0, but there are available seats.
+    // A simple check like "if (!infiniteCustomerQueueEnabled && (maxQueueSize == customerQueue.size()) then Drop" is not sufficient.
     if (infiniteCustomerQueueEnabled || (maxQueueSize > 0 && (customerQueue.size() < maxQueueSize)) || (maxQueueSize == 0 && !tablesAreFull())) {
         emit(customerDropRateTableSignal, 0);
         return false;
@@ -145,6 +165,9 @@ bool SeatManager::customerQueueIsFull()
     return true;
 }
 
+// Handles the leaving of an customer, so that:
+//  1) the first waiting customer occupies the seat;
+//  2) the statistics are correctly recorded.
 void SeatManager::handleLeavingCustomer(cMessage* msg)
 {
     OrderMessage* leavingCustomer = check_and_cast<OrderMessage*>(msg);
@@ -165,6 +188,10 @@ void SeatManager::handleLeavingCustomer(cMessage* msg)
     }
 }
 
+// Handles an arriving customer, so that:
+//  1) the customer is placed in the queue or dropped, if the queue is full;
+//  2) the customer takes a seat, if possible;
+//  3) the statistics are correctly recorded.
 void SeatManager::handleArrivingCustomer(cMessage* msg)
 {
     OrderMessage* arrivingCustomer = check_and_cast<OrderMessage*>(msg);
@@ -176,12 +203,12 @@ void SeatManager::handleArrivingCustomer(cMessage* msg)
 
     arrivingCustomer->setSeatManagerQueueArrivalTime(simTime());
 
-    if (tablesAreFull()) {    // All servers are busy and the customer goes in queue
+    if (tablesAreFull()) {
         customerQueue.push(arrivingCustomer);
         emit(numberOfCustomersTableQueueSignal, customerQueue.size());
         EV << "A new customer joined the queue." << endl;
 
-    } else {  // The customer eats
+    } else {
         customerSeated.insert(arrivingCustomer);
         arrivingCustomer->setSeatManagerQueueExitTime(simTime());
         emitWaitingTimeSignal(arrivingCustomer);
@@ -190,10 +217,13 @@ void SeatManager::handleArrivingCustomer(cMessage* msg)
     }
 }
 
+// Main handler.
 void SeatManager::handleMessage(cMessage* msg)
 {
-    if(msg->isSelfMessage()) // A customer finishes and leaves his spot
+    if(msg->isSelfMessage()) {
         handleLeavingCustomer(msg);
-    else // A customer requests a spot
+    }
+    else {
         handleArrivingCustomer(msg);
+    }
 }
