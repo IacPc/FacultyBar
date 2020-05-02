@@ -55,7 +55,7 @@ def compute_qq_plot_points(obs_vector):
     regression_y = regression_x*slope + offset
 
     offset_sign = 'x ' if offset < 0 else 'x +'
-    regr_equation = r'$y = ' + str(round(slope, 4)) + offset_sign + str(round(offset, 4)) + '$' + '\n' + r'$R^2 = ' + str(round(rsquared, 4)) + '$'
+    regr_equation = r'$y = ' + str(round(slope, 4)) + offset_sign + str(round(offset, 4)) + '$' + '\n' + r'$R^2 = ' + str(rsquared)[:5] + '$'
 
     return theoretical_quantiles, ordered_statistics, regression_x.tolist(), regression_y.tolist(), regr_equation
 
