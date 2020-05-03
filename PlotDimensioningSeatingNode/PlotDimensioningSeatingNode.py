@@ -79,21 +79,22 @@ def compute_loss_probability(u, utilization, node_capacity, number_of_seats):
 def plot_loss_probability(loss_probability_No_Queueing, loss_probability_with_queue):
     figure = plt.figure(figsize=(13.66, 7.68))
     plot_axes = plt.gca()
-    plot_axes.set_ylabel(r'$p_{LOSS}$', fontsize=14, labelpad=10, rotation=90)
+    plot_axes.set_ylabel(r'$p_{LOSS}[\%]$', fontsize=14, labelpad=10, rotation=90)
     plot_axes.set_xlabel(r'Capacity $K$', fontsize=14, labelpad=10)
-    plot_axes.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
 
     x_values = np.arange(start=6, stop=len(loss_probability_No_Queueing)+6, step=1.0)
+    loss_probability_no_queuing_percentage = np.array(loss_probability_No_Queueing)*100
+    loss_probability_with_queue_percentage = np.array(loss_probability_with_queue)*100
 
-    plot_axes.plot(x_values, loss_probability_No_Queueing, marker="", lw=2, color="cornflowerblue", label="Increasing only " + r'$N_{SEAT}$')
-    plot_axes.plot(x_values, loss_probability_with_queue, marker="", lw=2, color="darkorange", label="Increasing only " + r'$K_{q, SEATING}$')
-    plot_axes.plot(np.arange(start=0, stop=50), np.full(fill_value=0.01, shape=50), marker="", lw=1, linestyle="--", color="black", label=r'$p_{LOSS}=1$%')
+    plot_axes.plot(x_values, loss_probability_no_queuing_percentage, marker="", lw=2, color="cornflowerblue", label="Increasing only " + r'$N_{SEAT}$')
+    plot_axes.plot(x_values, loss_probability_with_queue_percentage, marker="", lw=2, color="darkorange", label="Increasing only " + r'$K_{q, SEATING}$')
+    plot_axes.plot(np.arange(start=0, stop=50), np.full(fill_value=1, shape=50), marker="", lw=1, linestyle="--", color="black", label=r'$p_{LOSS}=1$%')
 
     plot_axes.set_xlim([6, 30])
-    plot_axes.set_ylim([0, 0.100])
+    plot_axes.set_ylim([0, 10])
 
-    plot_axes.xaxis.set_major_locator(ticker.MultipleLocator(base=1.0))
-    plot_axes.yaxis.set_major_locator(ticker.MultipleLocator(base=0.01))
+    plot_axes.xaxis.set_major_locator(ticker.MultipleLocator(base=1))
+    plot_axes.yaxis.set_major_locator(ticker.MultipleLocator(base=1))
 
     plt.margins(0)
     plt.legend(loc="upper right", prop={'size': 14})
