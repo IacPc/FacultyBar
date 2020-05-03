@@ -131,10 +131,10 @@ def main():
     """
 
     """
-    plot_qq("waitingTimeVipCustomerCashierQueueStatistic", qq_data, y_axis_name=r'$W^{VIP}_{CASHIER} [s]', x_axis_name="Weibull quantiles")
-    plot_qq("responseTimeVipCustomerCashierNodeStatistic", qq_data, y_axis_name=r'$R^{VIP}_{CASHIER} [s]$', x_axis_name="Weibull quantiles (k = 1.15)")
-    plot_qq("waitingTimeNormalCustomerCashierQueueStatistic", qq_data, y_axis_name=r'$W^{NORMAL}_{CASHIER} [s]', x_axis_name="Weibull quantiles")
-    plot_qq("responseTimeNormalCustomerCashierNodeStatistic", qq_data, y_axis_name=r'$R^{NORMAL}_{CASHIER} [s]$', x_axis_name="Weibull quantiles (k = 0.95)")
+    plot_qq("waitingTimeVipCustomerCashierQueueStatistic", qq_data, y_axis_name=r'$W^{VIP}_{CASHIER} [s]', x_axis_name="Weibull quantile")
+    plot_qq("responseTimeVipCustomerCashierNodeStatistic", qq_data, y_axis_name=r'$R^{VIP}_{CASHIER} [s]$', x_axis_name="Weibull quantile (k = 1.15)")
+    plot_qq("waitingTimeNormalCustomerCashierQueueStatistic", qq_data, y_axis_name=r'$W^{NORMAL}_{CASHIER} [s]', x_axis_name="Weibull quantile")
+    plot_qq("responseTimeNormalCustomerCashierNodeStatistic", qq_data, y_axis_name=r'$R^{NORMAL}_{CASHIER} [s]$', x_axis_name="Weibull quantile (k = 0.95)")
     """
 
 if __name__ == "__main__":
