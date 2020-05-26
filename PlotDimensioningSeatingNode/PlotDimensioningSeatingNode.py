@@ -21,21 +21,27 @@ def load_parameters():
     number_of_seats = json.loads(config.get("SeatingNode", "number_of_seats"))
     data_length = json.loads(config.get("SeatingNode", "data_length"))
     u = (vip_arrival_rate + normal_arrival_rate) / eating_rate  # scalar
-    utilization = np.full(fill_value=u, shape=data_length) / number_of_seats  # utilization but in list form
+    u_divided_by_nseat = np.full(fill_value=u, shape=data_length) / number_of_seats
 
-    return u, utilization, number_of_seats, data_length
+    return u, u_divided_by_nseat, number_of_seats, data_length
 
 
-def compute_formula_second_term(utilization, node_capacity, n_seats, u):
+def compute_formula_second_term(u_divided_by_nseat, node_capacity, n_seats, u):
     u_to_c_over_c_fact = math.fdiv(math.power(u, n_seats), math.factorial(n_seats))
-    p_to_K_minus_C_plus1 = math.power(utilization, (node_capacity - n_seats + 1))
-    one_minus_p = math.fsub(1, utilization)
-    second_fraction_numerator = math.fsub(1, p_to_K_minus_C_plus1)
-    second_fraction = math.fdiv(second_fraction_numerator, one_minus_p)
+    second_fraction = 0
+
+    if u_divided_by_nseat == 1:
+        second_fraction = node_capacity - n_seats + 1
+    else:
+        u_div_C_to_K_minus_C_plus1 = math.power(u_divided_by_nseat, (node_capacity - n_seats + 1))
+        one_minus_u_div_C = math.fsub(1, u_divided_by_nseat)
+        second_fraction_numerator = math.fsub(1, u_div_C_to_K_minus_C_plus1)
+        second_fraction = math.fdiv(second_fraction_numerator, one_minus_u_div_C)
+
     return math.fmul(u_to_c_over_c_fact, second_fraction)
 
 
-def compute_p0(u, utilization, node_capacity, number_of_seats):
+def compute_p0(u, u_divided_by_nseat, node_capacity, number_of_seats):
     factorial_sum = []
     for n_seats in number_of_seats:
         temp_sum = math.mpf(0.0)  # type= real with arbitrary precision
@@ -45,7 +51,7 @@ def compute_p0(u, utilization, node_capacity, number_of_seats):
 
     second_term = []
     for index, n_seats in enumerate(number_of_seats):
-        work = compute_formula_second_term(utilization[index], node_capacity[index], n_seats, u)
+        work = compute_formula_second_term(u_divided_by_nseat[index], node_capacity[index], n_seats, u)
         second_term.append(work)
 
     p0 = []
@@ -65,8 +71,8 @@ def compute_single_item_loss_list(u, node_capacity, n_seats, p0):
     return math.fmul(fraction, p0)
 
 
-def compute_loss_probability(u, utilization, node_capacity, number_of_seats):
-    p0 = compute_p0(u, utilization, node_capacity, number_of_seats)
+def compute_loss_probability(u, u_divided_by_nseat, node_capacity, number_of_seats):
+    p0 = compute_p0(u, u_divided_by_nseat, node_capacity, number_of_seats)
 
     loss_probability = []
     for index, n_seats in enumerate(number_of_seats):
@@ -105,14 +111,14 @@ def plot_loss_probability(loss_probability_No_Queueing, loss_probability_with_qu
 
 
 def main():
-    u, utilization, number_of_seats, data_length = load_parameters()
+    u, u_divided_by_nseat, number_of_seats, data_length = load_parameters()
     node_capacity_no_queue = np.arange(start=number_of_seats, stop=number_of_seats + data_length)
-    loss_probability_No_Queueing = compute_loss_probability(u, utilization, node_capacity_no_queue, node_capacity_no_queue)
+    loss_probability_No_Queueing = compute_loss_probability(u, u_divided_by_nseat, node_capacity_no_queue, node_capacity_no_queue)
 
     queue_size_not_null = np.arange(0, data_length)
     number_of_seats_with_queue = np.full(fill_value=number_of_seats, shape=data_length)
     node_capacity_with_queue = np.add(queue_size_not_null, number_of_seats_with_queue)
-    loss_probability_with_queue = compute_loss_probability(u, utilization, node_capacity_with_queue, number_of_seats_with_queue)
+    loss_probability_with_queue = compute_loss_probability(u, u_divided_by_nseat, node_capacity_with_queue, number_of_seats_with_queue)
     plot_loss_probability(loss_probability_No_Queueing, loss_probability_with_queue)
     
     result_table_more_seats = tt.Texttable()

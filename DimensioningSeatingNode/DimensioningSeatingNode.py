@@ -24,22 +24,28 @@ def load_parameters():
         exit()
 
     u = (vip_arrival_rate + normal_arrival_rate) / eating_rate  # scalar
-    utilization = np.full(fill_value=u, shape=len(number_of_seats)) / number_of_seats  # utilization in list form
+    u_divided_by_nseat = np.full(fill_value=u, shape=len(number_of_seats)) / number_of_seats
     node_capacity = number_of_seats + queue_size  # scalar
 
-    return u, utilization, node_capacity, number_of_seats, queue_size
+    return u, u_divided_by_nseat, node_capacity, number_of_seats, queue_size
 
 
-def compute_formula_second_term(utilization, node_capacity, n_seats, u):
-    u_to_n_seats_over_n_seats_fact = math.fdiv(math.power(u, n_seats), math.factorial(n_seats))
-    p_to_node_capacity_minus_n_seats_plus1 = math.power(utilization, (node_capacity - n_seats + 1))
-    one_minus_p = math.fsub(1, utilization)
-    second_fraction_numerator = math.fsub(1, p_to_node_capacity_minus_n_seats_plus1)
-    second_fraction = math.fdiv(second_fraction_numerator, one_minus_p)
-    return math.fmul(u_to_n_seats_over_n_seats_fact, second_fraction)
+def compute_formula_second_term(u_divided_by_nseat, node_capacity, n_seats, u):
+    u_to_n_seat_over_n_seat_fact = math.fdiv(math.power(u, n_seats), math.factorial(n_seats))
+    second_fraction = 0
+
+    if u_divided_by_nseat == 1:
+        second_fraction = node_capacity - n_seats + 1
+    else:
+        u_div_nseat_to_node_capacity_minus_n_seat_plus1 = math.power(u_divided_by_nseat, (node_capacity - n_seats + 1))
+        one_minus_u_divided_by_nseat = math.fsub(1, u_divided_by_nseat)
+        second_fraction_numerator = math.fsub(1, u_div_nseat_to_node_capacity_minus_n_seat_plus1)
+        second_fraction = math.fdiv(second_fraction_numerator, one_minus_u_divided_by_nseat)
+
+    return math.fmul(u_to_n_seat_over_n_seat_fact, second_fraction)
 
 
-def compute_p0(u, utilization, node_capacity, number_of_seats):
+def compute_p0(u, u_divided_by_nseat, node_capacity, number_of_seats):
     factorial_sum = []
     for n_seats in number_of_seats:
         temp_sum = math.mpf(0.0)  # type = real with arbitary precision
@@ -49,7 +55,7 @@ def compute_p0(u, utilization, node_capacity, number_of_seats):
 
     second_term = []
     for index, n_seats in enumerate(number_of_seats):
-        work = compute_formula_second_term(utilization[index], node_capacity[index], n_seats, u)
+        work = compute_formula_second_term(u_divided_by_nseat[index], node_capacity[index], n_seats, u)
         second_term.append(work)
 
     p0 = []
@@ -69,8 +75,8 @@ def compute_single_item_loss_list(u, node_capacity, n_seats, p0):
     return math.fmul(fraction, p0)
 
 
-def compute_loss_probability(u, utilization, node_capacity, number_of_seats):
-    p0 = compute_p0(u, utilization, node_capacity, number_of_seats)
+def compute_loss_probability(u, u_divided_by_nseat, node_capacity, number_of_seats):
+    p0 = compute_p0(u, u_divided_by_nseat, node_capacity, number_of_seats)
 
     loss_probability = []
     for index, n_seats in enumerate(number_of_seats):
@@ -81,14 +87,14 @@ def compute_loss_probability(u, utilization, node_capacity, number_of_seats):
 
 
 def main():
-    u, utilization, node_capacity, number_of_seats, queue_size = load_parameters()
-    loss_probability = compute_loss_probability(u, utilization, node_capacity, number_of_seats)
+    u, u_divided_by_nseat, node_capacity, number_of_seats, queue_size = load_parameters()
+    loss_probability = compute_loss_probability(u, u_divided_by_nseat, node_capacity, number_of_seats)
 
     result_table = tt.Texttable()
-    result_table.header(["Utilization", "Node capacity", "Number of seats", "Queue capacity", "Loss probability"])
+    result_table.header(["u/N_SEAT", "Node capacity", "Number of seats", "Queue capacity", "Loss probability"])
     result_table.set_cols_dtype(["t", "t", "t", "t", "t"])
 
-    for row in zip(utilization, node_capacity, number_of_seats, queue_size, loss_probability):
+    for row in zip(u_divided_by_nseat, node_capacity, number_of_seats, queue_size, loss_probability):
         result_table.add_row(row)
 
     print(result_table.draw())
